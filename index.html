@@ -47,7 +47,7 @@
   <div class="cardhead"><h2>4. YouTube Studio — Publish & Insights</h2><span class="tiny">Official YouTube APIs</span></div>
   <div class="ytstate" id="ytStatus">Not connected. To activate publishing, host this app on HTTPS and enter your Google OAuth client ID.</div>
   <details class="ytsetupdetails" id="ytSetup"><summary>First-time YouTube connection setup</summary>
-    <p class="yt-note" style="margin-top:12px">The local HTML file cannot sign in to Google. Publish this app on HTTPS (such as GitHub Pages), enable YouTube Data API v3 and YouTube Analytics API in Google Cloud, and configure a <b>Web application</b> OAuth client with the exact app origin. No client secret belongs in this app.</p>
+    <p class="yt-note" style="margin-top:12px">The OAuth Client ID for CLIPIT is preconfigured. For sign-in, open the hosted HTTPS app and ensure YouTube Data API v3, YouTube Analytics API, and the OAuth consent screen are configured in its Google Cloud project. The authorized JavaScript origin must be <b>https://taemur-cell.github.io</b>. No client secret belongs in this app.</p>
     <label class="fieldlabel" for="ytClientId">Google OAuth Client ID</label>
     <input type="text" id="ytClientId" inputmode="text" placeholder="1234567890-xxxx.apps.googleusercontent.com" autocomplete="off">
     <div class="buttons"><button type="button" class="secondary" id="ytSaveClient">Save public client ID</button><a class="buttonlike quiet" target="_blank" rel="noopener" href="https://console.cloud.google.com/apis/credentials">Google Cloud credentials</a></div>
@@ -105,7 +105,7 @@
 <p class="foot">This is a creative editor, not copyright clearance. Adding commentary or graphics doesn't guarantee permission to publish other people's footage.</p></div></div>
 </dialog>
 <dialog id="help"><div class="dialoghead"><h2>Quick start</h2><button id="closeHelp" class="quiet">Close</button></div><p>1. Tap <b>Select video from phone</b> and choose a file in Android's picker.</p><p>2. Tap <b>Find automatic clip suggestions</b>, or add your own timestamps.</p><p>3. Tap <b>Edit video</b> to add text, emojis, shapes, caption banners, or your own images. Preview and tap Apply edits. Then tap <b>Generate all clips with edits</b>.</p><p>4. Tap <b>Save as…</b> to choose a destination and filename, or <b>Download</b> to save through Chrome. You can also share clips to Google Photos or other supported apps.</p><p>5. To publish directly to YouTube, host this app at HTTPS, configure OAuth and connect your channel. Review title, description, visibility and audience.</p><p>6. Check the resulting format before publishing. For longer videos and Urdu/English transcription, see the cloud guide.</p><a href="./GUIDE.html">Open complete user guide</a></dialog>
-<script>window.CLIP_STUDIO_YOUTUBE_CLIENT_ID = '';</script>
+<script>window.CLIP_STUDIO_YOUTUBE_CLIENT_ID = '841787104866-5oq63hpk8qnlb88kivntmiq4crjt6dr6.apps.googleusercontent.com';</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 'use strict';
@@ -564,7 +564,7 @@ const ytStatus=(msg,error=false)=>{const n=$('ytStatus');n.textContent=msg;n.cla
 const ytCount=v=>v===undefined||v===null?'—':new Intl.NumberFormat('en-US').format(Number(v));
 const ytSafeClientId=id=>/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(String(id).trim());
 function ytIsHosted(){return location.protocol==='https:'||(location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname))}
-function ytClientId(){return String(yt.clientId||window.CLIP_STUDIO_YOUTUBE_CLIENT_ID||'').trim()}
+function ytClientId(){return String(window.CLIP_STUDIO_YOUTUBE_CLIENT_ID||yt.clientId||'').trim()}
 function ytReady(){return Boolean(yt.token)&&Date.now()<yt.expiresAt-15000}
 function ytRenderConnection(){
  $('ytRefresh').disabled=!ytReady();$('ytDisconnect').disabled=!yt.token;
@@ -575,7 +575,7 @@ function ytRenderConnection(){
 function ytLoadSettings(){
  try{yt.clientId=localStorage.getItem('clipstudio_yt_client_id')||''}catch(e){}
  $('ytClientId').value=ytClientId();
- if(ytIsHosted())ytStatus('YouTube not connected. Set a Google OAuth client ID (once), then tap Connect YouTube channel.');
+ if(ytIsHosted())ytStatus(ytSafeClientId(ytClientId())?'OAuth Client ID configured. Tap Connect YouTube channel to authorize your Google account.':'YouTube not connected. Set a Google OAuth client ID (once), then tap Connect YouTube channel.');
  else ytStatus('YouTube sign-in is unavailable from a local .html file. Deploy this app to HTTPS and configure Google OAuth first. The video editor still works offline.',true);
  ytRenderConnection();
 }
