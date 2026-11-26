@@ -35,7 +35,20 @@
 <div class="buttons"><button id="markStart" class="quiet" disabled>Use player as start</button><button id="markEnd" class="quiet" disabled>Use player as end</button><button id="add" class="secondary" disabled>Add custom clip</button></div>
 </section>
 </div>
-<section class="card results"><div class="cardhead"><h2>3. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
+<section class="card" id="contextStudio">
+ <div class="cardhead"><h2>3. Context AI — Dialogue + Actions</h2><span class="tiny">Urdu • English • Visual evidence</span></div>
+ <p class="helper">For contextual highlights, first analyze the source in the optional free Colab notebook, then import its <code>context_analysis.json</code> here. You may also import an SRT/VTT subtitle file for dialogue-only scoring. The browser does <b>not</b> send your video to an AI server automatically.</p>
+ <div class="buttons"><a href="https://colab.research.google.com/github/taemur-cell/CLIPIT/blob/main/Cloud_Processing_Colab.ipynb" target="_blank" rel="noopener noreferrer" class="buttonlike quiet">Open free AI analysis notebook</a></div>
+ <label class="fieldlabel" for="contextFile" style="margin-top:14px">Import analysis JSON, or timed subtitles (.srt/.vtt)</label><input id="contextFile" type="file" accept=".json,.srt,.vtt,application/json,text/plain">
+ <div id="contextStatus" class="notice" role="status">Choose your source video above, then import its context analysis. Manual clipping stays available without analysis.</div>
+ <label class="fieldlabel" for="contextSearch">Find spoken lines in the transcript (Urdu / English)</label>
+ <input id="contextSearch" type="search" placeholder="Search a phrase or word..." aria-label="Search recognized dialogue">
+ <div id="contextMatches" class="cliplist"></div>
+ <label class="fieldlabel" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="contextCaptions" type="checkbox" style="width:auto;margin:0" checked>Automatically add timed caption bars to suggested clips (editable in Edit video)</label>
+ <button id="contextMake" class="primary full" type="button" disabled>Create context-aware clip suggestions</button>
+ <p class="foot">Action understanding only applies if the imported analysis includes visual descriptions from the optional image-caption model. Captions may be inaccurate. Always review the selected moments and subtitles before publishing.</p>
+ </section>
+ <section class="card results"><div class="cardhead"><h2>3. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
 <div class="two settings"><label>Resolution<select id="quality"><option value="360">Light • 360 × 640 (OPPO)</option><option value="540" selected>Balanced • 540 × 960</option><option value="720">High • 720 × 1280 (Pixel 7)</option></select></label><label>Framing<select id="framing"><option value="fit" selected>Fit whole picture</option><option value="fill">Center crop to 9:16</option></select></label></div>
 <button class="primary full" id="generate" disabled>Generate all clips with edits</button>
 <div id="progress" class="progress" aria-live="polite">Choose a video and make a clip first.</div><div id="downloads" class="downloads"></div>
@@ -106,11 +119,12 @@
 </dialog>
 <dialog id="help"><div class="dialoghead"><h2>Quick start</h2><button id="closeHelp" class="quiet">Close</button></div><p>1. Tap <b>Select video from phone</b> and choose a file in Android's picker.</p><p>2. Tap <b>Find automatic clip suggestions</b>, or add your own timestamps.</p><p>3. Tap <b>Edit video</b> to add text, emojis, shapes, caption banners, or your own images. Preview and tap Apply edits. Then tap <b>Generate all clips with edits</b>.</p><p>4. Tap <b>Save as…</b> to choose a destination and filename, or <b>Download</b> to save through Chrome. You can also share clips to Google Photos or other supported apps.</p><p>5. To publish directly to YouTube, host this app at HTTPS, configure OAuth and connect your channel. Review title, description, visibility and audience.</p><p>6. Check the resulting format before publishing. For longer videos and Urdu/English transcription, see the cloud guide.</p><a href="./GUIDE.html">Open complete user guide</a></dialog>
 <script>window.CLIP_STUDIO_YOUTUBE_CLIENT_ID = '784143642709-o8q9u09eaeene077n54jj0emo3vln3ts.apps.googleusercontent.com';</script>
+<script src="./context_engine.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const state={file:null,url:null,duration:0,clips:[],busy:false,downloads:[],rendered:[],overlayImages:new Map(),imageUrls:[]};
+const state={file:null,url:null,duration:0,clips:[],busy:false,downloads:[],rendered:[],overlayImages:new Map(),imageUrls:[],contextData:null};
 const preview=$('preview');
 const say=(msg,error=false)=>{const el=$('notice');el.textContent=msg;el.classList.toggle('error',!!error)};
 const progress=(msg,error=false)=>{const el=$('progress');el.textContent=msg;el.classList.toggle('error',!!error)};
@@ -119,6 +133,7 @@ const parseTime=x=>{let p=String(x).trim().split(':').map(Number);if(!p.length||
 const secLength=()=>Math.min(60,Math.max(3,Number($('length').value)||30));
 const refresh=()=>{
  const ok=!!state.file&&Number.isFinite(state.duration)&&state.duration>0;
+ const contextButton=$('contextMake');if(contextButton)contextButton.disabled=!ok||!state.contextData||state.busy;
  ['auto','add','markStart','markEnd'].forEach(id=>$(id).disabled=!ok||state.busy);
  $('generate').disabled=!ok||!state.clips.length||state.busy;
  $('clipCount').textContent=`${state.clips.length} clip${state.clips.length===1?'':'s'}`;
@@ -126,9 +141,9 @@ const refresh=()=>{
  if(!state.clips.length){const el=document.createElement('div');el.className='empty';el.textContent=ok?'No clips yet. Tap Find automatic clip suggestions, or Add custom clip.':'Your proposed clips will appear here after you choose a video.';box.append(el);return}
  state.clips.forEach((clip,index)=>{
   const row=document.createElement('div');row.className='clip';
-  const left=document.createElement('div');const title=document.createElement('strong');title.textContent=`Clip ${index+1} · ${clip.kind==='custom'?'Your selection':'Visual suggestion'}`;
+  const left=document.createElement('div');const title=document.createElement('strong');title.textContent=`Clip ${index+1} · ${clip.kind==='custom'?'Your selection':clip.kind==='context'?'Context suggestion':'Visual suggestion'}`;
   const times=document.createElement('small');times.textContent=`${fmt(clip.start)} → ${fmt(clip.end)} · ${(clip.end-clip.start).toFixed(1)} sec`;
-  left.append(title,times);
+  left.append(title,times);if(clip.reason){const why=document.createElement('small');why.textContent='Why: '+clip.reason;left.append(why)}
   const actions=document.createElement('div');actions.className='clipactions';
   for(const [label,fn] of [['Preview',()=>{preview.currentTime=clip.start;preview.play().catch(()=>{});preview.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{if(preview.currentTime>=clip.end)preview.pause()},Math.max(0,clip.end-clip.start)*1000)}],['Edit video',()=>openEditor(index)],['Save clip',()=>savePlannedClip(index)],['▶ Publish',()=>ytPublishPlannedClip(index)],['Trim',()=>{const start=prompt('Start (MM:SS or HH:MM:SS)',fmt(clip.start));if(start===null)return;const end=prompt('End (MM:SS or HH:MM:SS)',fmt(clip.end));if(end===null)return;const a=parseTime(start),b=parseTime(end);if(!validRange(a,b)){say('Invalid clip times. They must be inside the source video.',true);return}clip.start=a;clip.end=b;refresh()}],['Remove',()=>{state.clips.splice(index,1);refresh()}]]){const b=document.createElement('button');b.className=label==='▶ Publish'?'yt-red':'quiet';b.textContent=label;b.disabled=state.busy;b.onclick=fn;actions.append(b)}
   row.append(left,actions);box.append(row);
@@ -136,7 +151,7 @@ const refresh=()=>{
 };
 const validRange=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&a>=0&&b>a&&b<=state.duration+.05;
 function loadMedia(file){return new Promise((resolve,reject)=>{
- clearRendered();for(const u of state.imageUrls)URL.revokeObjectURL(u);state.imageUrls=[];state.overlayImages.clear();const old=state.url;state.url=URL.createObjectURL(file);state.file=file;state.duration=0;state.clips=[];
+ clearRendered();for(const u of state.imageUrls)URL.revokeObjectURL(u);state.imageUrls=[];state.overlayImages.clear();const old=state.url;state.url=URL.createObjectURL(file);state.file=file;state.duration=0;state.clips=[];state.contextData=null;$('contextStatus').textContent='New video selected. Import its matching context analysis, or keep using the visual cutter.';$('contextMatches').replaceChildren();
  preview.hidden=false;preview.pause();preview.src=state.url;preview.load();
  if(old)URL.revokeObjectURL(old);
  $('metadata').textContent=`${file.name} • ${(file.size/1048576).toFixed(1)} MB`;say('Reading video metadata…');refresh();
@@ -223,6 +238,61 @@ $('auto').onclick=async()=>{
  catch(e){state.clips=chooseIntervals([]);say(`Visual analysis was limited (${e.message}). Used evenly spaced clip suggestions instead.`,true);progress('Fallback timings ready. Review them before exporting.')}
  finally{state.busy=false;refresh()}
 };
+
+/* CLIPIT v6 contextual suggestions: local import, no paid API key and no hidden uploads. */
+function clipitStatus(message,problem=false){const el=$('contextStatus');el.textContent=message;el.classList.toggle('error',!!problem)}
+function clipitTranscriptMatches(){
+ const box=$('contextMatches');box.replaceChildren();
+ const data=state.contextData;if(!data)return;
+ const q=$('contextSearch').value.trim().toLowerCase();
+ if(!q){const caption=document.createElement('div');caption.className='helper';caption.textContent='Type a word to find a spoken moment, then tap Add clip.';box.append(caption);return}
+ const matches=data.transcript.filter(x=>x.text.toLowerCase().includes(q)).slice(0,8);
+ if(!matches.length){box.textContent='No matches in imported transcript.';return}
+ for(const seg of matches){
+  const row=document.createElement('div');row.className='clip';const textBox=document.createElement('div');const line=document.createElement('strong');line.textContent=seg.text.slice(0,170);
+  const tm=document.createElement('small');tm.textContent=fmt(seg.start)+' → '+fmt(seg.end);textBox.append(line,tm);
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent='Add clip';
+  button.onclick=()=>{
+   if(!state.file||!state.duration){clipitStatus('Choose source video first.',true);return}
+   const length=Math.min(state.duration,secLength());const a=Math.max(0,Math.min(state.duration-length,(seg.start+seg.end)/2-length*.4));
+   const clip={start:Number(a.toFixed(2)),end:Number(Math.min(state.duration,a+length).toFixed(2)),kind:'custom',reason:'Chosen dialogue: '+seg.text.slice(0,85)};
+   state.clips.push(clip);refresh();clipitStatus('Added a custom clip from the selected dialogue. You can trim and edit it below.');
+  };
+  row.append(textBox,button);box.append(row);
+ }
+}
+$('contextSearch').addEventListener('input',clipitTranscriptMatches);
+$('contextFile').addEventListener('change',async event=>{
+ const file=event.target.files?.[0];if(!file)return;event.target.value='';
+ if(file.size>8*1024*1024){clipitStatus('Analysis file is larger than 8 MB. Export fewer segments, or use shorter source footage.',true);return}
+ try{
+  const raw=await file.text();const engine=window.ClipitContextEngine;if(!engine)throw Error('Context engine did not load. Reload the app.');
+  const data=/\.(srt|vtt)$/i.test(file.name)?engine.fromText(raw,''):JSON.parse(raw);
+  const parsed=engine.normalise(data);
+  if(!parsed.transcript.length&&!parsed.visuals.length)throw Error('No timed transcript or visual event data in this file.');
+  if(state.file&&parsed.source_filename&&parsed.source_filename!==state.file.name)throw Error('This analysis is for '+parsed.source_filename+', not '+state.file.name+'. Re-select the matching video or generate a new report.');
+  if(state.duration&&Math.abs(parsed.duration-state.duration)>Math.max(6,state.duration*.04))throw Error('Analysis duration does not match your selected video. Please import the correct file.');
+  state.contextData=parsed;clipitTranscriptMatches();refresh();
+  clipitStatus('Loaded '+parsed.transcript.length+' timed dialogue segments and '+parsed.visuals.length+' visual observations ('+parsed.visualCaptions+' contain action descriptions). Tap Create context-aware clip suggestions.');
+ }catch(e){state.contextData=null;refresh();clipitStatus('Could not import: '+e.message,true)}
+});
+function clipitAttachCaptions(clip,data){
+ if(!$('contextCaptions').checked)return;
+ const matches=data.transcript.filter(x=>x.end>clip.start&&x.start<clip.end).slice(0,18);
+ clip.overlays=matches.map((x,i)=>({id:'context_caption_'+Date.now()+'_'+i,type:'caption',text:x.text.slice(0,180),x:.5,y:.8,size:25,color:'#ffffff',bg:'#111827',opacity:.94,from:Math.max(0,x.start-clip.start),to:Math.min(clip.end-clip.start,x.end-clip.start),shape:'rectangle'}));
+}
+$('contextMake').onclick=()=>{
+ if(!state.file||!state.contextData||!window.ClipitContextEngine)return;
+ try{
+  const data=state.contextData;
+  const suggestions=window.ClipitContextEngine.recommend({...data,duration_seconds:state.duration},{targetSeconds:secLength(),count:Number($('count').value)||3});
+  suggestions.forEach(c=>clipitAttachCaptions(c,data));
+  const manual=state.clips.filter(c=>c.kind==='custom');
+  state.clips=[...manual,...suggestions].sort((a,b)=>a.start-b.start);refresh();
+  clipitStatus('Created '+suggestions.length+' context-scored suggestions and kept '+manual.length+' manual clips. Review the reasons and timestamps below. These are recommendations, not guaranteed best scenes.');
+ }catch(e){clipitStatus('Context selection failed: '+e.message,true)}
+};
+
 function mimeChoice(){if(!window.MediaRecorder)return null;for(const m of ['video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4','video/webm;codecs=vp8,opus','video/webm;codecs=vp9,opus','video/webm'])if(MediaRecorder.isTypeSupported(m))return m;return null}
 
 // --- Creative layer editor: every layer uses normalized coordinates for all export sizes. ---
