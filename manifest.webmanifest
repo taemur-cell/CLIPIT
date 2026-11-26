@@ -1,0 +1,18 @@
+{
+  "name": "AI Clip Studio",
+  "short_name": "Clip Studio",
+  "description": "Phone video editor and YouTube publishing dashboard",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10151d",
+  "theme_color": "#10151d",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
