@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10151d"><meta name="description" content="AI Clip Studio - phone-first clip maker for videos you have rights to edit"><style>:root{--ink:#ebf0f4;--muted:#a5b2bc;--bg:#0f141b;--card:#1b232d;--line:#36414e;--accent:#92dfc6;--accent2:#163a36;--warn:#f5cf9e;--danger:#f2b4b4}*{box-sizing:border-box}body{font:15px/1.48 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);margin:0}h1,h2,h3,p{margin:0}p{margin-bottom:10px}h1{font-size:clamp(25px,4vw,36px);line-height:1.15;margin-bottom:10px}h2{font-size:18px}h3{font-size:14px;margin-bottom:12px}button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.top{border-bottom:1px solid #28313c;display:flex;align-items:center;justify-content:space-between;padding:15px max(16px,calc((100vw - 1000px)/2));gap:10px}.logo{display:flex;align-items:center;gap:10px;font-weight:750}.mark{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--accent);color:#123129}.logo small{display:block;color:var(--muted);font-size:11px;font-weight:400}.wrap{max-width:1000px;margin:auto;padding:20px 15px 65px}.hero{max-width:750px;padding:16px 0 12px}.hero p,.helper,.foot{color:var(--muted);font-size:13px}.eyebrow{font-size:11px;letter-spacing:.14em;color:var(--accent);font-weight:800;margin-bottom:7px}.steps{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 20px}.steps span{background:#1b2930;border:1px solid #2f4349;color:#c9dfdd;border-radius:20px;padding:7px 11px;font-size:12px}.steps b{color:var(--accent)}.layout{display:grid;grid-template-columns:1fr 1fr;gap:15px}.card{padding:19px;border:1px solid var(--line);border-radius:17px;background:var(--card);margin-bottom:15px}.cardhead{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:15px}.tiny{font-size:11px;color:var(--muted)}.upload{border:2px dashed #568879;border-radius:14px;background:#1b3230;display:flex;align-items:center;flex-direction:column;justify-content:center;padding:24px 14px;text-align:center;cursor:pointer;gap:6px;min-height:142px}.upload strong{font-size:16px}.upload small{font-size:12px;color:#c8d4d2}.upload input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.upload:focus-within{outline:2px solid var(--accent)}.notice,.progress{font-size:13px;background:#121d24;border:1px solid #35534e;border-radius:10px;padding:11px;margin:12px 0;color:#b9e6dc;white-space:pre-wrap}.notice.error,.progress.error{color:var(--danger);border-color:#65444a}.preview{display:block;width:100%;height:auto;max-height:320px;background:#060a10;border-radius:11px;margin:12px 0}.preview[hidden]{display:none}.metadata{font-size:12px;color:var(--muted);margin-bottom:9px;overflow-wrap:anywhere}.fieldlabel{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.two label{color:var(--muted);font-size:12px}select,input{width:100%;background:#111923;border:1px solid #435261;color:#edf2f4;border-radius:9px;padding:10px;margin-top:4px;min-width:0}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}.primary,.secondary,.quiet,.buttonlike{border-radius:9px;border:1px solid #4a6a62;padding:10px 13px;text-decoration:none;display:inline-block;text-align:center}.primary{background:var(--accent);color:#09281f;font-weight:800}.secondary{color:var(--ink);background:#2b4347}.quiet,.buttonlike{color:#d1e7e3;background:#24343e}.full{width:100%;margin:10px 0}.separator{height:1px;background:#384550;margin:18px 0}.helper{margin:8px 0}.cliplist{display:grid;gap:9px}.empty{border:1px dashed #42515a;color:var(--muted);padding:18px;text-align:center;border-radius:9px}.clip{display:flex;justify-content:space-between;align-items:center;gap:9px;background:#151f29;border:1px solid #35434e;border-radius:11px;padding:12px}.clip strong{font-size:13px}.clip small{font-size:12px;display:block;color:var(--muted)}.clipactions{display:flex;gap:5px}.clipactions button{font-size:12px;padding:7px}.settings{margin-top:20px}.downloads{display:grid;gap:8px;margin:10px 0}.downloaditem{background:#19332d;padding:12px;border:1px solid #436b5c;border-radius:9px;color:#c5f1e4}.downloaditem a{display:inline-block;background:#a6e6d5;color:#0d3027;text-decoration:none;padding:8px 12px;margin-top:8px;border-radius:8px;font-weight:700}.foot{margin-top:12px}.results{margin-top:0}dialog{background:#202a35;color:var(--ink);border:1px solid #455869;border-radius:14px;max-width:500px;width:90%;padding:19px}dialog::backdrop{background:#0009}.dialoghead{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}dialog p{margin-bottom:13px}dialog a{color:var(--accent)}footer{color:var(--muted);font-size:12px;padding:20px 0}@media(max-width:740px){.layout{grid-template-columns:1fr}.card{padding:15px}.wrap{padding-top:10px}.top{padding:12px 14px}.logo small{font-size:10px}.steps span{padding:6px 9px}.two{gap:8px}.clip{align-items:flex-start;flex-direction:column}.clipactions{align-self:flex-end}}
+
+.downloaditem .buttons{margin-top:8px}.downloaditem .buttons button{font-size:13px}.downloaditem video{display:block}
+
+/* v4.3 in-clip creative overlay editor */
+#editorDialog{max-width:min(920px,97vw);width:96vw;max-height:93dvh;overflow:auto;padding:15px}#editorDialog .dialoghead{gap:10px}#editorDialog .dialoghead .tiny{margin:5px 0 0} .editor-layout{display:grid;grid-template-columns:minmax(210px,320px) minmax(245px,1fr);gap:18px;align-items:start}.editor-stage{margin:auto;width:min(100%,320px);position:relative}.editor-stage canvas{width:100%;aspect-ratio:9/16;height:auto;display:block;border:1px solid #698a87;border-radius:12px;background:#080c12;touch-action:none}.editor-play{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:7px}.editor-play button{font-size:12px;padding:7px 11px}.editor-play span{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}#editorSeek{padding:0;margin:10px 0;width:100%}.editor-panel{min-width:0}.editor-panel h3{margin:5px 0}.editor-tools{margin:6px 0 14px}.editor-tools button{font-size:12px;flex:1;min-width:93px;padding:8px}.editor-panel select{margin:4px 0 12px}.editor-panel label{color:var(--muted);font-size:12px;display:block}.editor-panel textarea{width:100%;margin-top:5px;background:#111923;border:1px solid #435261;color:#fff;border-radius:9px;padding:9px;font:inherit;min-height:72px;resize:vertical}.editor-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0}.editor-mini-grid input[type=color]{height:40px;padding:3px}.editor-mini-grid input[type=range]{padding:0;height:28px}.source-for-canvas{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}#editorMessage{margin:12px 0}.clipactions{flex-wrap:wrap}#overlayProperties[hidden]{display:none}
+@media(max-width:660px){#editorDialog{max-height:96dvh;width:98vw;padding:12px}.editor-layout{grid-template-columns:1fr;gap:12px}.editor-stage{width:min(100%,285px)}.editor-panel{width:100%}.editor-tools button{flex:none}.editor-play{max-width:285px;margin-left:auto;margin-right:auto}}
+
+/* v5 YouTube integration */
+.ytcard{border-color:#51404a;background:#211f27}.yt-red{background:#f03e50;color:#fff;border-color:#f03e50}.yt-red:hover{background:#d62e43}.yt-note{color:#b8c3ce;font-size:12px;line-height:1.6}.yt-statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.yt-stat{padding:12px;background:#131c26;border:1px solid #364353;border-radius:10px;min-width:0}.yt-stat small{display:block;font-size:11px;color:#9babbb}.yt-stat strong{font-size:18px;display:block;overflow-wrap:anywhere}.ytvideolist,.ytcommentlist{display:grid;gap:8px;margin-top:12px}.ytvideo{padding:11px;border:1px solid #384651;border-radius:10px;background:#161f29;display:flex;gap:10px;align-items:center}.ytvideo img{width:82px;height:47px;object-fit:cover;border-radius:6px;flex:0 0 auto}.ytvideo .ytmeta{min-width:0;flex:1}.ytvideo .ytmeta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ytvideo small,.ytcomment small{display:block;color:#acb9c5;font-size:11px}.ytvideo a,.ytcard a{color:#a6e9d7}.ytcomment{padding:12px;background:#141f29;border:1px solid #384651;border-radius:10px;overflow-wrap:anywhere}.ytcomment p{white-space:pre-wrap;margin:7px 0;font-size:13px}.ytchart{display:flex;gap:3px;align-items:end;height:90px;margin:12px 0 2px;background:#15212a;padding:8px;border-radius:8px}.ytchart i{display:block;flex:1;min-height:2px;border-radius:3px 3px 0 0;background:#91dccc}.ytstate{padding:10px 12px;background:#11232b;border:1px solid #35535a;border-radius:9px;font-size:12px;margin:9px 0;white-space:pre-wrap}.ytstate.bad{border-color:#88535a;color:#ffb4b4}.ytfilepill{overflow-wrap:anywhere;background:#111c27;border-radius:9px;padding:11px;font-size:12px}.ytform{margin:10px 0}.ytform label{display:block;color:#bed0d9;font-size:12px;margin-bottom:8px}.ytform textarea{width:100%;min-height:90px;resize:vertical;border-radius:9px;padding:10px;border:1px solid #435261;background:#111923;color:#edf2f4;font:inherit;margin:5px 0}.ytdialog{max-width:560px;max-height:90vh;overflow:auto}.yt-upload-status{font-size:12px;color:#c3dfd3;padding:8px 0;white-space:pre-wrap}.ytsetupdetails summary{cursor:pointer;color:#b7dfd7;font-weight:600}.ytsetupdetails{margin:12px 0}.ytdivider{border-top:1px solid #384451;margin:16px 0}.yt-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.yt-metric{font-size:12px;color:#b7c8cf;margin-top:8px}@media(max-width:620px){.yt-statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ytvideo img{width:66px;height:44px}.ytdialog{max-height:96dvh;padding:14px}}
+
+</style><title>AI Clip Studio v5 — Video Editor & YouTube Studio</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"></head>
+<body>
+<header class="top"><div class="logo"><span class="mark">▶</span><div>AI Clip Studio <small>Phone editor + YouTube Studio • v5.0</small></div></div><button id="helpButton" class="quiet">Guide & help</button></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">START HERE</div><h1>Choose a video. Add text or stickers. Save your shorts.</h1><p>This version actually generates short videos on your phone. Editing runs on your phone. YouTube publishing requires an authorized HTTPS app and uploads only after your confirmation. Automatic suggestions use visual activity—not speech-aware AI.</p></section>
+<section class="steps"><span><b>1</b> Pick video</span><span><b>2</b> Find clips</span><span><b>3</b> Generate</span><span><b>4</b> Save as / Download</span></section>
+<div class="layout">
+<section class="card">
+<div class="cardhead"><h2>1. Choose your source</h2><span class="tiny">Gallery • Files • Google Photos*</span></div>
+<label class="upload" id="uploadZone" for="source"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 18v3h18v-3M12 16V3m-5 5 5-5 5 5"/></svg><strong>Select video from phone</strong><small>Tap here and choose an MP4 or other supported video</small><input type="file" id="source" accept="video/*"></label>
+<div id="notice" class="notice" role="status">No video selected. Choose one above.</div>
+<video id="preview" playsinline controls preload="metadata" class="preview" hidden></video>
+<div id="metadata" class="metadata"></div>
+<p class="foot">*Google Photos may appear in Android's system picker. If it doesn't, open Google Photos and download or share the video to Files first.</p>
+</section>
+<section class="card">
+<div class="cardhead"><h2>2. Make clips</h2><span id="duraBadge" class="tiny">Waiting for video</span></div>
+<label class="fieldlabel" for="platform">Platform / suggested duration</label><select id="platform"><option value="instagram">Instagram Reels · 30 s starting point</option><option value="tiktok">TikTok · 40 s starting point</option><option value="youtube">YouTube Shorts · 45 s starting point</option><option value="custom">Custom · choose duration</option></select>
+<div class="two"><label>Clip length (seconds)<input type="number" min="3" max="60" value="30" id="length" inputmode="numeric"></label><label>How many?<select id="count"><option>1</option><option selected>3</option><option>5</option></select></label></div>
+<button id="auto" class="primary full" disabled>Find automatic clip suggestions</button><div class="helper">Looks for visual activity/scene changes. It doesn't understand spoken Urdu or English, humor, or copyright permission. You can adjust every clip.</div>
+<div class="separator"></div><h3>Or select a precise moment</h3>
+<div class="two"><label>Start (MM:SS)<input id="start" type="text" value="00:00" inputmode="text"></label><label>End (MM:SS)<input id="end" type="text" value="00:10" inputmode="text"></label></div>
+<div class="buttons"><button id="markStart" class="quiet" disabled>Use player as start</button><button id="markEnd" class="quiet" disabled>Use player as end</button><button id="add" class="secondary" disabled>Add custom clip</button></div>
+</section>
+</div>
+<section class="card results"><div class="cardhead"><h2>3. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
+<div class="two settings"><label>Resolution<select id="quality"><option value="360">Light • 360 × 640 (OPPO)</option><option value="540" selected>Balanced • 540 × 960</option><option value="720">High • 720 × 1280 (Pixel 7)</option></select></label><label>Framing<select id="framing"><option value="fit" selected>Fit whole picture</option><option value="fill">Center crop to 9:16</option></select></label></div>
+<button class="primary full" id="generate" disabled>Generate all clips with edits</button>
+<div id="progress" class="progress" aria-live="polite">Choose a video and make a clip first.</div><div id="downloads" class="downloads"></div>
+<p class="foot"><b>Save location:</b> Once clips are generated, tap <b>Save as… choose folder</b> to pick a name and location using Android's file picker. Or tap <b>Download</b> for Chrome Downloads; <b>Share / Photos</b> opens Android sharing. You must tap a save action after rendering. The web app cannot browse private phone folders by itself.</p><p class="foot">On Android Chrome, video recording is real-time. A 20-second clip takes about 20 seconds to render. Keep this page open. Files normally save in Downloads; MP4 is used only if supported, otherwise WebM. Free browser processing may struggle with very large videos.</p>
+</section>
+<section class="card"><div class="cardhead"><h2>Urdu & English / Cloud AI</h2><span class="tiny">Separate optional workflow</span></div><p class="helper">The optional notebook provides Urdu/English transcription and speech-based candidate highlights after a manual Google Colab run. It is <b>not connected</b> to this app, and cannot start automatically when you import a file here. You can generate clips on the phone above without it.</p><div class="buttons"><a class="quiet buttonlike" href="./GUIDE.html">Read full guide</a><a class="quiet buttonlike" href="./Cloud_Processing_Colab.ipynb" download>Get Colab notebook</a></div></section>
+<footer>Use only video you own or have rights to reuse. Changing crops, subtitles or watermarks cannot guarantee freedom from copyright claims.</footer>
+<section class="card ytcard" id="youtubeStudio">
+  <div class="cardhead"><h2>4. YouTube Studio — Publish & Insights</h2><span class="tiny">Official YouTube APIs</span></div>
+  <div class="ytstate" id="ytStatus">Not connected. To activate publishing, host this app on HTTPS and enter your Google OAuth client ID.</div>
+  <details class="ytsetupdetails" id="ytSetup"><summary>First-time YouTube connection setup</summary>
+    <p class="yt-note" style="margin-top:12px">The local HTML file cannot sign in to Google. Publish this app on HTTPS (such as GitHub Pages), enable YouTube Data API v3 and YouTube Analytics API in Google Cloud, and configure a <b>Web application</b> OAuth client with the exact app origin. No client secret belongs in this app.</p>
+    <label class="fieldlabel" for="ytClientId">Google OAuth Client ID</label>
+    <input type="text" id="ytClientId" inputmode="text" placeholder="1234567890-xxxx.apps.googleusercontent.com" autocomplete="off">
+    <div class="buttons"><button type="button" class="secondary" id="ytSaveClient">Save public client ID</button><a class="buttonlike quiet" target="_blank" rel="noopener" href="https://console.cloud.google.com/apis/credentials">Google Cloud credentials</a></div>
+    <p class="yt-note">A client ID is public configuration, not a password. It is kept on this device for convenience. OAuth access tokens are kept only in this browser tab's memory. Your friend can connect her own channel to the same deployed app.</p>
+  </details>
+  <div class="buttons"><button type="button" class="yt-red" id="ytConnect">Connect YouTube channel</button><button type="button" class="secondary" id="ytRefresh" disabled>Refresh dashboard</button><button type="button" class="quiet" id="ytDisconnect" disabled>Disconnect session</button></div>
+  <div id="ytChannelInfo" class="yt-note" style="margin:12px 0">Channel: not connected</div>
+  <div class="yt-statgrid" id="ytStats">
+    <div class="yt-stat"><small>Subscribers</small><strong>—</strong></div><div class="yt-stat"><small>Lifetime views</small><strong>—</strong></div><div class="yt-stat"><small>Recent-video likes</small><strong>—</strong></div><div class="yt-stat"><small>Recent-video comments</small><strong>—</strong></div>
+  </div>
+  <div class="ytdivider"></div>
+  <h3>Upload a finished Short</h3>
+  <p class="yt-note">After generating clips, tap <b>Publish to YouTube</b> next to <b>Save as</b> for the clip you want. Or choose an existing finished video below. You always review the details before the actual upload.</p>
+  <label class="fieldlabel" for="ytExternalFile">Choose a finished video from your phone (optional)</label>
+  <input type="file" accept="video/mp4,video/webm,video/quicktime,video/*" id="ytExternalFile">
+  <div id="ytFileInfo" class="ytfilepill">No external video selected</div>
+  <div class="buttons"><button type="button" id="ytPublishExternal" class="yt-red" disabled>Publish selected video</button></div>
+  <div class="ytdivider"></div>
+  <h3>Your channel dashboard</h3>
+  <div class="two"><label>Activity period<select id="ytPeriod"><option value="7">7 days</option><option value="28" selected>28 days</option><option value="90">90 days</option></select></label><label>Summary<input id="ytOverview" disabled value="Connect to load analytics"></label></div>
+  <div class="ytchart" id="ytChart" aria-label="Daily views graph"><span class="tiny">Connect your YouTube channel to load a real daily-views chart.</span></div>
+  <div class="yt-metric" id="ytAnalyticsSummary">YouTube Analytics not loaded.</div>
+  <div class="ytdivider"></div><h3>Recent uploads</h3><div class="ytvideolist" id="ytVideos"><div class="empty">No channel connected.</div></div>
+  <div class="ytdivider"></div><h3>Recent comments</h3><p class="yt-note">Latest accessible comments. Comments may be disabled or unavailable on certain videos.</p><div class="ytcommentlist" id="ytComments"><div class="empty">No channel connected.</div></div>
+  <p class="yt-note" style="margin-top:14px"><a href="./PRIVACY.html">Privacy &amp; permissions</a>. Live channel figures come from YouTube. Analytics reports may lag behind recent activity. We do not identify individual people who liked and subscribed. No automatic social posting occurs without your confirmation.</p>
+</section>
+<dialog id="ytPublishDialog" class="ytdialog" aria-label="Review before publishing to YouTube">
+ <div class="dialoghead"><h2>Review YouTube upload</h2><button type="button" id="ytClosePublish" class="quiet">Close</button></div>
+ <div class="ytfilepill" id="ytPendingName">No clip selected</div>
+ <div class="ytform"><label>Video title (required)<input id="ytTitle" maxlength="100" placeholder="Enter a clear title" required></label>
+ <label>Description<textarea id="ytDescription" maxlength="5000" placeholder="Describe the Short and add relevant hashtags"></textarea></label>
+ <div class="two"><label>Visibility<select id="ytVisibility"><option value="private" selected>Private (recommended for first test)</option><option value="unlisted">Unlisted</option><option value="public">Public</option></select></label>
+ <label>Audience — is this made for kids?<select id="ytMadeForKids"><option value="" selected>Choose one</option><option value="no">No, not made for kids</option><option value="yes">Yes, made for kids</option></select></label></div>
+ <label style="display:flex;align-items:flex-start;gap:8px"><input type="checkbox" id="ytRights" style="width:auto;margin-top:3px">I confirm I have permission to publish this footage and have reviewed this video and its metadata.</label></div>
+ <div class="yt-upload-status" id="ytUploadProgress">Ready for review. Nothing will be uploaded until you press Confirm upload.</div>
+ <div class="buttons"><button class="yt-red" type="button" id="ytConfirmUpload">Confirm upload</button><button type="button" id="ytCancelUpload" class="quiet" hidden>Cancel upload</button></div>
+ <div id="ytUploadResult" class="yt-note"></div>
+</dialog>
+
+</main>
+<dialog id="editorDialog" aria-label="Edit selected short">
+<div class="dialoghead"><div><h2 id="editorTitle">Edit short</h2><p class="tiny">Drag an element on the video to reposition it. Text and stickers will be saved inside the clip.</p></div><button type="button" id="editorClose" class="quiet">Done</button></div>
+<div class="editor-layout"><div class="editor-stage"><canvas id="editorCanvas" width="360" height="640" aria-label="Video preview with added text and overlays"></canvas><video id="editorVideo" playsinline preload="auto" class="source-for-canvas"></video><div class="editor-play"><button id="editorPlay" class="primary" type="button">▶ Play preview</button><span id="editorClock">00:00 / 00:00</span></div><input type="range" min="0" max="100" value="0" step="0.05" id="editorSeek" aria-label="Preview playback position"><p class="tiny">This preview is 9:16, matching the exported video. Drag an element directly on it.</p></div>
+<div class="editor-panel"><h3>Add an element</h3><div class="buttons editor-tools"><button type="button" class="secondary" id="newText">＋ Text</button><button type="button" class="secondary" id="newCaption">＋ Caption bar</button><button type="button" class="secondary" id="newEmoji">＋ Emoji</button><button type="button" class="secondary" id="newShape">＋ Shape</button><button type="button" class="secondary" id="newImage">＋ Image</button><input id="imageOverlayInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+<label class="fieldlabel" for="overlayPicker">Select an element to edit</label><select id="overlayPicker"><option value="">No element selected</option></select>
+<div id="overlayProperties" hidden>
+<label id="overlayTextWrap">Text / Emoji<textarea id="overlayText" rows="3" maxlength="180" placeholder="Type your own commentary, subtitle or title" dir="auto"></textarea></label>
+<div class="editor-mini-grid"><label>Color<input type="color" id="overlayColor" value="#ffffff"></label><label>Background<input type="color" id="overlayBg" value="#111827"></label></div>
+<div class="editor-mini-grid"><label>Size <span id="sizeValue"></span><input type="range" id="overlaySize" min="12" max="85" value="36"></label><label>Opacity <span id="opacityValue"></span><input type="range" id="overlayOpacity" min="15" max="100" value="100"></label></div>
+<div class="editor-mini-grid"><label>Appear after (sec)<input id="overlayFrom" type="number" min="0" value="0" step="0.25" inputmode="decimal"></label><label>Disappear after (sec)<input id="overlayTo" type="number" min="0" value="5" step="0.25" inputmode="decimal"></label></div>
+<div class="editor-mini-grid"><label>Horizontal position %<input id="overlayX" type="range" min="5" max="95" value="50"></label><label>Vertical position %<input id="overlayY" type="range" min="5" max="95" value="75"></label></div>
+<div class="buttons"><button type="button" id="overlayRemove" class="quiet">Delete selected</button><button type="button" id="overlayFront" class="quiet">Bring to front</button></div>
+</div><div class="notice" id="editorMessage" role="status">Select a tool to add your first element.</div>
+<div class="buttons"><button type="button" class="primary" id="editorDone">✓ Apply edits</button></div>
+<p class="foot">This is a creative editor, not copyright clearance. Adding commentary or graphics doesn't guarantee permission to publish other people's footage.</p></div></div>
+</dialog>
+<dialog id="help"><div class="dialoghead"><h2>Quick start</h2><button id="closeHelp" class="quiet">Close</button></div><p>1. Tap <b>Select video from phone</b> and choose a file in Android's picker.</p><p>2. Tap <b>Find automatic clip suggestions</b>, or add your own timestamps.</p><p>3. Tap <b>Edit video</b> to add text, emojis, shapes, caption banners, or your own images. Preview and tap Apply edits. Then tap <b>Generate all clips with edits</b>.</p><p>4. Tap <b>Save as…</b> to choose a destination and filename, or <b>Download</b> to save through Chrome. You can also share clips to Google Photos or other supported apps.</p><p>5. To publish directly to YouTube, host this app at HTTPS, configure OAuth and connect your channel. Review title, description, visibility and audience.</p><p>6. Check the resulting format before publishing. For longer videos and Urdu/English transcription, see the cloud guide.</p><a href="./GUIDE.html">Open complete user guide</a></dialog>
+<script>window.CLIP_STUDIO_YOUTUBE_CLIENT_ID = '';</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const state={file:null,url:null,duration:0,clips:[],busy:false,downloads:[],rendered:[],overlayImages:new Map(),imageUrls:[]};
+const preview=$('preview');
+const say=(msg,error=false)=>{const el=$('notice');el.textContent=msg;el.classList.toggle('error',!!error)};
+const progress=(msg,error=false)=>{const el=$('progress');el.textContent=msg;el.classList.toggle('error',!!error)};
+const fmt=s=>{s=Math.max(0,Math.floor(+s||0));return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
+const parseTime=x=>{let p=String(x).trim().split(':').map(Number);if(!p.length||p.length>3||p.some(v=>!Number.isFinite(v)||v<0))return NaN;return p.reduce((a,b)=>a*60+b,0)};
+const secLength=()=>Math.min(60,Math.max(3,Number($('length').value)||30));
+const refresh=()=>{
+ const ok=!!state.file&&Number.isFinite(state.duration)&&state.duration>0;
+ ['auto','add','markStart','markEnd'].forEach(id=>$(id).disabled=!ok||state.busy);
+ $('generate').disabled=!ok||!state.clips.length||state.busy;
+ $('clipCount').textContent=`${state.clips.length} clip${state.clips.length===1?'':'s'}`;
+ const box=$('clipList');box.replaceChildren();
+ if(!state.clips.length){const el=document.createElement('div');el.className='empty';el.textContent=ok?'No clips yet. Tap Find automatic clip suggestions, or Add custom clip.':'Your proposed clips will appear here after you choose a video.';box.append(el);return}
+ state.clips.forEach((clip,index)=>{
+  const row=document.createElement('div');row.className='clip';
+  const left=document.createElement('div');const title=document.createElement('strong');title.textContent=`Clip ${index+1} · ${clip.kind==='custom'?'Your selection':'Visual suggestion'}`;
+  const times=document.createElement('small');times.textContent=`${fmt(clip.start)} → ${fmt(clip.end)} · ${(clip.end-clip.start).toFixed(1)} sec`;
+  left.append(title,times);
+  const actions=document.createElement('div');actions.className='clipactions';
+  for(const [label,fn] of [['Preview',()=>{preview.currentTime=clip.start;preview.play().catch(()=>{});preview.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{if(preview.currentTime>=clip.end)preview.pause()},Math.max(0,clip.end-clip.start)*1000)}],['Edit video',()=>openEditor(index)],['Save clip',()=>savePlannedClip(index)],['▶ Publish',()=>ytPublishPlannedClip(index)],['Trim',()=>{const start=prompt('Start (MM:SS or HH:MM:SS)',fmt(clip.start));if(start===null)return;const end=prompt('End (MM:SS or HH:MM:SS)',fmt(clip.end));if(end===null)return;const a=parseTime(start),b=parseTime(end);if(!validRange(a,b)){say('Invalid clip times. They must be inside the source video.',true);return}clip.start=a;clip.end=b;refresh()}],['Remove',()=>{state.clips.splice(index,1);refresh()}]]){const b=document.createElement('button');b.className=label==='▶ Publish'?'yt-red':'quiet';b.textContent=label;b.disabled=state.busy;b.onclick=fn;actions.append(b)}
+  row.append(left,actions);box.append(row);
+ });
+};
+const validRange=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&a>=0&&b>a&&b<=state.duration+.05;
+function loadMedia(file){return new Promise((resolve,reject)=>{
+ clearRendered();for(const u of state.imageUrls)URL.revokeObjectURL(u);state.imageUrls=[];state.overlayImages.clear();const old=state.url;state.url=URL.createObjectURL(file);state.file=file;state.duration=0;state.clips=[];
+ preview.hidden=false;preview.pause();preview.src=state.url;preview.load();
+ if(old)URL.revokeObjectURL(old);
+ $('metadata').textContent=`${file.name} • ${(file.size/1048576).toFixed(1)} MB`;say('Reading video metadata…');refresh();
+ const timer=setTimeout(()=>{cleanup();reject(Error('Video could not be opened within 20 seconds. Try an MP4 recorded with your phone.'))},20000);
+ const cleanup=()=>{clearTimeout(timer);preview.removeEventListener('loadedmetadata',good);preview.removeEventListener('error',bad)};
+ const good=()=>{cleanup();let dur=preview.duration;if(!Number.isFinite(dur)||dur<=0){reject(Error('Video has no readable duration'));return}state.duration=dur;$('duraBadge').textContent=fmt(dur);$('metadata').textContent=`${file.name} • ${(file.size/1048576).toFixed(1)} MB • ${fmt(dur)}`;
+ $('end').value=fmt(Math.min(10,dur));say(`Video imported successfully. Duration: ${fmt(dur)}. Tap Find automatic clip suggestions.`);refresh();resolve()};
+ const bad=()=>{cleanup();reject(Error('This video format cannot be decoded by Chrome. Try an MP4 (H.264/AAC).'))};
+ preview.addEventListener('loadedmetadata',good,{once:true});preview.addEventListener('error',bad,{once:true});
+ })}
+$('source').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{await loadMedia(file)}catch(err){say(err.message,true);state.file=null;state.duration=0;refresh()}finally{e.target.value=''}});
+$('platform').addEventListener('change',()=>{const map={instagram:30,tiktok:40,youtube:45};const n=map[$('platform').value];if(n)$('length').value=n});
+$('markStart').onclick=()=>$('start').value=fmt(preview.currentTime);
+$('markEnd').onclick=()=>$('end').value=fmt(preview.currentTime);
+$('add').onclick=()=>{const a=parseTime($('start').value),b=parseTime($('end').value);if(!validRange(a,b)){say('Enter a valid Start and End time (inside the loaded video).',true);return}state.clips.push({start:a,end:b,kind:'custom'});say(`Added custom clip ${state.clips.length}.`);refresh()};
+async function readyVideo(video,url){return new Promise((resolve,reject)=>{
+ const timer=setTimeout(()=>{cleanup();reject(Error('Media metadata timed out'))},15000);
+ const cleanup=()=>{clearTimeout(timer);video.removeEventListener('loadedmetadata',good);video.removeEventListener('error',bad)};
+ const good=()=>{cleanup();resolve()};const bad=()=>{cleanup();reject(Error('Unable to decode this video'))};
+ video.addEventListener('loadedmetadata',good,{once:true});video.addEventListener('error',bad,{once:true});video.src=url;video.preload='auto';video.playsInline=true;video.load();
+ })}
+// Android Chrome sometimes reports NaN / Infinity for duration on the *second*
+// hidden video element even when the original upload has a valid duration.
+// Never derive a seek position from a non-finite number: currentTime rejects NaN.
+function safeSeekTime(video,requested){
+ if(!Number.isFinite(requested)||requested<0)throw Error('Invalid clip timestamp. Adjust the clip start and end times.');
+ const duration=Number.isFinite(video.duration)&&video.duration>0?video.duration:
+   (Number.isFinite(state.duration)&&state.duration>0?state.duration:null);
+ const upper=duration===null?requested:Math.max(0,duration-0.04);
+ const target=Math.max(0,Math.min(upper,requested));
+ if(!Number.isFinite(target))throw Error('Video duration is not available. Reimport the video.');
+ return target;
+}
+async function seek(video,time){
+ const target=safeSeekTime(video,time);
+ if(Math.abs(video.currentTime-target)<.04 && video.readyState>=2)return;
+ return new Promise((resolve,reject)=>{
+  let ended=false;
+  const finish=(error)=>{if(ended)return;ended=true;cleanup();error?reject(error):resolve()};
+  const onFrame=()=>{if(video.readyState>=2&&Number.isFinite(video.currentTime)&&Math.abs(video.currentTime-target)<.16)finish()};
+  const bad=()=>finish(Error('Source video cannot seek. Try an H.264/AAC MP4.'));
+  const timer=setTimeout(()=>finish(Error('Preview frame could not load. Try closing the editor and reselecting the video.')),11000);
+  const cleanup=()=>{clearTimeout(timer);video.removeEventListener('seeked',onFrame);video.removeEventListener('loadeddata',onFrame);video.removeEventListener('timeupdate',onFrame);video.removeEventListener('error',bad)};
+  video.addEventListener('seeked',onFrame);video.addEventListener('loadeddata',onFrame);
+  video.addEventListener('timeupdate',onFrame);video.addEventListener('error',bad);
+  try{video.currentTime=target;onFrame()}catch(err){finish(Error('Could not seek video: '+err.message))}
+ });
+}
+async function visualSamples(){
+ const video=document.createElement('video');video.muted=true;video.playsInline=true;
+ const canvas=document.createElement('canvas');canvas.width=96;canvas.height=54;const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ const scores=[];let last=null;
+ try{await readyVideo(video,state.url);const n=Math.min(35,Math.max(6,Math.floor(state.duration/3)));
+ for(let i=1;i<=n;i++){
+  const t=Math.max(.1,Math.min(state.duration-.2,(i/(n+1))*state.duration));
+  try{await seek(video,t);ctx.drawImage(video,0,0,96,54);const pixels=ctx.getImageData(0,0,96,54).data;
+   const reduced=new Uint8Array(96*54);for(let j=0;j<reduced.length;j++)reduced[j]=(.2126*pixels[4*j]+.7152*pixels[4*j+1]+.0722*pixels[4*j+2])|0;
+   if(last){let sum=0;for(let j=0;j<reduced.length;j+=3)sum+=Math.abs(reduced[j]-last[j]);scores.push({time:t,score:sum})}
+   last=reduced;
+  }catch(e){/* ignore a sample if the decoder cannot seek to a frame */}
+  progress(`Finding visual activity: ${Math.round(i/n*100)}%`);
+ }
+ }finally{video.pause();video.removeAttribute('src');video.load()}
+ return scores;
+}
+function chooseIntervals(scores){const dur=state.duration,requested=Number($('count').value)||3,needed=Math.max(1,Math.min(requested,Math.floor(dur/3))),len=Math.min(dur,secLength());
+ if(dur<=len+1)return [{start:0,end:dur,kind:'auto'}];
+ const chosen=[];
+ for(const a of [...scores].sort((x,y)=>y.score-x.score)){
+  const start=Math.min(dur-len,Math.max(0,a.time-len/2)),end=start+len;
+  if(chosen.every(c=>Math.abs(c.start-start)>Math.min(len*.8,Math.max(3,dur/(needed*3)))))chosen.push({start:+start.toFixed(2),end:+end.toFixed(2),kind:'auto'});
+  if(chosen.length>=needed)break;
+ }
+ for(let i=0;chosen.length<needed&&i<needed*5;i++){
+  const start=Math.max(0,Math.min(dur-len,((i+.5)/needed)*dur-len/2));
+  if(chosen.every(c=>Math.abs(c.start-start)>.4*len))chosen.push({start:+start.toFixed(2),end:+(start+len).toFixed(2),kind:'auto'});
+ }
+ if(!chosen.length)chosen.push({start:0,end:len,kind:'auto'});
+ return chosen.sort((a,b)=>a.start-b.start);
+}
+$('auto').onclick=async()=>{
+ if(!state.file)return;say('Analyzing video frames. This is visual activity scoring, not speech-aware AI.');state.busy=true;refresh();let scores=[];
+ try{scores=await visualSamples();state.clips=chooseIntervals(scores);say(`Found ${state.clips.length} clip suggestions. Adjust them if needed, then Generate all clips & save.`);progress(`Ready to generate ${state.clips.length} clips.`)}
+ catch(e){state.clips=chooseIntervals([]);say(`Visual analysis was limited (${e.message}). Used evenly spaced clip suggestions instead.`,true);progress('Fallback timings ready. Review them before exporting.')}
+ finally{state.busy=false;refresh()}
+};
+function mimeChoice(){if(!window.MediaRecorder)return null;for(const m of ['video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4','video/webm;codecs=vp8,opus','video/webm;codecs=vp9,opus','video/webm'])if(MediaRecorder.isTypeSupported(m))return m;return null}
+
+// --- Creative layer editor: every layer uses normalized coordinates for all export sizes. ---
+let activeClipIndex=-1, selectedOverlayId=null, editorRAF=0, editorReady=false, overlayCounter=0;
+const editingVideo=$('editorVideo'), editingCanvas=$('editorCanvas'), editorDialog=$('editorDialog');
+const editorMsg=(message,isError=false)=>{const n=$('editorMessage');n.textContent=message;n.classList.toggle('error',!!isError)};
+const own=id=>`layer_${Date.now()}_${++overlayCounter}`;
+const selectedClip=()=>state.clips[activeClipIndex];
+const currentLayers=()=>selectedClip()?.overlays||[];
+const chosenLayer=()=>currentLayers().find(o=>o.id===selectedOverlayId);
+const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+const containsUrdu=s=>/[\u0600-\u06ff]/.test(s||'');
+function wrappedLines(ctx,text,maxWidth,limit=5){
+ const output=[];
+ for(const raw of String(text||'').split('\n')){
+  let line='';
+  for(const piece of raw.split(/\s+/)){
+   const words=piece.length>35?piece.match(/.{1,20}/gu)||[piece]:[piece];
+   for(const word of words){const next=line?line+' '+word:word;
+    if(ctx.measureText(next).width>maxWidth&&line){output.push(line);line=word}else line=next;
+    if(output.length>=limit)return output;
+   }
+  }
+  output.push(line);
+  if(output.length>=limit)return output;
+ }
+ return output.length?output:[''];
+}
+function layerBounds(ctx, layer, w,h){
+ const fontPx=clamp(layer.size||36,12,100)*(w/360);
+ const x=clamp(layer.x??.5,0,1)*w,y=clamp(layer.y??.65,0,1)*h;
+ if(layer.type==='shape'){const size=Math.max(20,fontPx*2.3);return {x,y,ww:size,hh:size,fontPx,lines:[]}}
+ if(layer.type==='image'){const img=state.overlayImages.get(layer.id);const aspect=(img&&img.naturalWidth)?img.naturalWidth/img.naturalHeight:1;const ww=Math.min(w*.92,Math.max(30,fontPx*3.1));return {x,y,ww,hh:ww/aspect,fontPx,lines:[]}}
+ ctx.font=`bold ${fontPx}px system-ui, "Noto Sans Arabic", sans-serif`;
+ if(layer.type==='emoji'){return {x,y,ww:fontPx*1.8,hh:fontPx*1.9,fontPx,lines:[layer.text||'⭐']}}
+ const maxWidth=w*.84;
+ const lines=wrappedLines(ctx,layer.text||'Your text',maxWidth-fontPx*.65,6);
+ const measured=Math.max(fontPx*1.6,...lines.map(t=>ctx.measureText(t).width+fontPx*.6));
+ return {x,y,ww:Math.min(w*.9,measured),hh:fontPx*1.25*lines.length+fontPx*.42,fontPx,lines};
+}
+function paintLayer(ctx, layer, w,h, selected=false){
+ const b=layerBounds(ctx,layer,w,h);ctx.save();ctx.globalAlpha=clamp(layer.opacity??1,.15,1);
+ const {x,y,ww,hh,fontPx,lines}=b;const top=y-hh/2,left=x-ww/2;
+ if(layer.type==='shape'){
+  ctx.fillStyle=layer.color||'#f8c45a';
+  if(layer.shape==='circle'){ctx.beginPath();ctx.arc(x,y,Math.min(ww,hh)/2,0,Math.PI*2);ctx.fill()}
+  else {ctx.beginPath();if(ctx.roundRect)ctx.roundRect(left,top,ww,hh,Math.min(15,ww*.15));else ctx.rect(left,top,ww,hh);ctx.fill()}
+ }else if(layer.type==='image'){
+  const img=state.overlayImages.get(layer.id);
+  if(img?.complete&&img.naturalWidth>0)ctx.drawImage(img,left,top,ww,hh);
+ }else if(layer.type==='emoji'){
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${fontPx*1.45}px system-ui, "Noto Color Emoji", sans-serif`;ctx.fillText(layer.text||'⭐',x,y);
+ }else{
+  if(layer.type==='caption'){
+   ctx.fillStyle=layer.bg||'#111827';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(left-fontPx*.08,top,ww+fontPx*.16,hh,12);else ctx.rect(left,top,ww,hh);ctx.fill();
+  }
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction=containsUrdu(layer.text)?'rtl':'ltr';
+  ctx.font=`bold ${fontPx}px system-ui, "Noto Sans Arabic", "Noto Naskh Arabic", sans-serif`;
+  ctx.lineJoin='round';ctx.strokeStyle='rgba(0,0,0,.85)';ctx.lineWidth=Math.max(2,fontPx*.12);ctx.fillStyle=layer.color||'#ffffff';
+  const lineHeight=fontPx*1.25;
+  for(let i=0;i<lines.length;i++){const ly=y+(i-(lines.length-1)/2)*lineHeight;ctx.strokeText(lines[i],x,ly,ww-fontPx*.4);ctx.fillText(lines[i],x,ly,ww-fontPx*.4)}
+ }
+ ctx.restore();
+ if(selected){ctx.save();ctx.setLineDash([6,4]);ctx.strokeStyle='#92dfc6';ctx.lineWidth=Math.max(1.3,w/240);ctx.strokeRect(left-5,top-5,ww+10,hh+10);ctx.restore()}
+ return b;
+}
+function paintVideo(ctx,vid,w,h,framing){
+ ctx.fillStyle='#090c13';ctx.fillRect(0,0,w,h);
+ if(vid.readyState<2||!vid.videoWidth)return;
+ const scale=framing==='fill'?Math.max(w/vid.videoWidth,h/vid.videoHeight):Math.min(w/vid.videoWidth,h/vid.videoHeight);
+ const ww=vid.videoWidth*scale,hh=vid.videoHeight*scale;
+ ctx.drawImage(vid,(w-ww)/2,(h-hh)/2,ww,hh);
+}
+function drawComposite(ctx,vid,w,h,clip,t,framing,isPreview){
+ paintVideo(ctx,vid,w,h,framing);
+ for(const layer of (clip.overlays||[])){
+  const rel=t-clip.start;
+  if(rel>=clamp(layer.from??0,0,clip.end-clip.start)-.01 && rel<=clamp(layer.to??clip.end-clip.start,0,clip.end-clip.start)+.01){
+   paintLayer(ctx,layer,w,h,!!isPreview&&layer.id===selectedOverlayId);
+  }
+ }
+}
+function editorDraw(){
+ if(!editorDialog.open)return;
+ const clip=selectedClip();
+ if(clip){drawComposite(editingCanvas.getContext('2d'),editingVideo,360,640,clip,editingVideo.currentTime||clip.start,$('framing').value,true);
+  const elapsed=clamp((editingVideo.currentTime||clip.start)-clip.start,0,clip.end-clip.start);
+  $('editorClock').textContent=`${elapsed.toFixed(1)}s / ${(clip.end-clip.start).toFixed(1)}s`;
+  if(!editingVideo.seeking&&!document.activeElement?.isSameNode($('editorSeek')))$('editorSeek').value=elapsed;
+  if(!editingVideo.paused&&editingVideo.currentTime>=clip.end-.06){editingVideo.pause();$('editorPlay').textContent='▶ Play preview'}
+ }
+ editorRAF=requestAnimationFrame(editorDraw);
+}
+async function openEditor(i){
+ if(state.busy||!state.clips[i]||!state.url)return;
+ activeClipIndex=i;selectedOverlayId=null;const clip=selectedClip();clip.overlays??=[];
+ $('editorTitle').textContent=`Edit Clip ${i+1} — add your elements`;
+ $('editorSeek').max=(clip.end-clip.start).toFixed(2);$('editorSeek').value=0;
+ $('editorPlay').textContent='▶ Play preview';editorMsg('Tap + Text, + Caption bar, + Emoji, + Shape, or + Image. Drag an element to move it.');
+ editorDialog.showModal();editorReady=false;
+ editorMsg('Loading preview frame…');
+ try{if(editingVideo.src!==state.url)await readyVideo(editingVideo,state.url);editingVideo.pause();await seek(editingVideo,clip.start);editorReady=true;
+  editorMsg('Preview ready. Add text, captions, stickers or images and tap Apply edits.');}
+ catch(err){editorMsg(`Could not load video preview: ${err.message}`,true)}
+ renderOverlayPicker();cancelAnimationFrame(editorRAF);editorDraw();
+}
+function closeEditor(){if(editorDialog.open)editorDialog.close();editingVideo.pause();cancelAnimationFrame(editorRAF);editorReady=false;refresh()}
+$('editorClose').onclick=closeEditor;$('editorDone').onclick=closeEditor;
+editorDialog.addEventListener('close',()=>{editingVideo.pause();cancelAnimationFrame(editorRAF);editorReady=false;refresh()});
+$('editorPlay').onclick=async()=>{
+ const clip=selectedClip();if(!clip||!editorReady)return;
+ try{if(editingVideo.paused){if(editingVideo.currentTime>=clip.end-.1)await seek(editingVideo,clip.start);await editingVideo.play();$('editorPlay').textContent='Ⅱ Pause'}
+ else{editingVideo.pause();$('editorPlay').textContent='▶ Play preview'}}
+ catch(err){editorMsg('Preview playback was blocked: '+err.message,true)}
+};
+$('editorSeek').oninput=()=>{const clip=selectedClip();if(!clip||!editorReady)return;const offset=Number($('editorSeek').value);if(!Number.isFinite(offset))return;editingVideo.pause();seek(editingVideo,clip.start+offset).catch(err=>editorMsg('Preview seek failed: '+err.message,true));$('editorPlay').textContent='▶ Play preview'};
+function addOverlay(type, extras={}){
+ const clip=selectedClip();if(!clip)return;
+ const dur=clip.end-clip.start;
+ const defaults={id:own(),type,text:type==='emoji'?'✨':type==='caption'?'Add your commentary here':'Your text here',x:.5,y:type==='caption'?.78:type==='text'?.2:.55,size:type==='text'?38:type==='caption'?28:39,color:'#ffffff',bg:'#111827',opacity:1,from:0,to:dur,shape:'rectangle'};
+ const l={...defaults,...extras};clip.overlays??=[];clip.overlays.push(l);selectedOverlayId=l.id;renderOverlayPicker();editorMsg(`Added ${type}. Customize it and tap Apply edits.`)
+}
+$('newText').onclick=()=>addOverlay('text');$('newCaption').onclick=()=>addOverlay('caption');$('newEmoji').onclick=()=>addOverlay('emoji');$('newShape').onclick=()=>addOverlay('shape',{color:'#f4cb71',size:55});
+$('newImage').onclick=()=>$('imageOverlayInput').click();
+$('imageOverlayInput').onchange=async evt=>{
+ const file=evt.target.files?.[0];evt.target.value='';if(!file)return;
+ if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)||file.size>12*1024*1024){editorMsg('Select a PNG, JPEG, WebP or GIF smaller than 12 MB.',true);return}
+ const url=URL.createObjectURL(file),img=new Image();
+ try{await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error('Cannot decode image'));img.src=url});
+  addOverlay('image',{size:60,text:file.name});const layer=chosenLayer();state.overlayImages.set(layer.id,img);state.imageUrls.push(url);
+ }catch(e){URL.revokeObjectURL(url);editorMsg(e.message,true)}
+};
+function renderOverlayPicker(){
+ const sel=$('overlayPicker');sel.replaceChildren();const opt=document.createElement('option');opt.value='';opt.textContent='Tap an element to select it';sel.append(opt);
+ for(const layer of currentLayers()){const o=document.createElement('option');o.value=layer.id;o.textContent=(layer.type==='image'?'🖼 ':layer.type==='shape'?'▢ ':'✍ ')+(layer.text||layer.type).slice(0,36);sel.append(o)}
+ sel.value=selectedOverlayId||'';const l=chosenLayer();$('overlayProperties').hidden=!l;
+ if(!l)return;
+ $('overlayTextWrap').hidden=l.type==='shape'||l.type==='image';$('overlayText').value=l.text||'';
+ $('overlayColor').value=l.color||'#ffffff';$('overlayBg').value=l.bg||'#111827';$('overlaySize').value=l.size||36;$('sizeValue').textContent=`${l.size||36}`;
+ $('overlayOpacity').value=Math.round((l.opacity??1)*100);$('opacityValue').textContent=`${$('overlayOpacity').value}%`;
+ $('overlayFrom').value=l.from??0;$('overlayTo').value=l.to??(selectedClip().end-selectedClip().start);
+ $('overlayFrom').max=$('overlayTo').max=(selectedClip().end-selectedClip().start).toFixed(2);
+ $('overlayX').value=Math.round(l.x*100);$('overlayY').value=Math.round(l.y*100);
+}
+$('overlayPicker').onchange=e=>{selectedOverlayId=e.target.value||null;renderOverlayPicker()};
+const bindProp=(id,cb)=>$(id).addEventListener('input',e=>{const l=chosenLayer();if(!l)return;cb(l,e.target.value);if(id==='overlaySize')$('sizeValue').textContent=l.size;if(id==='overlayOpacity')$('opacityValue').textContent=Math.round(l.opacity*100)+'%';if(id==='overlayText'){const option=$('overlayPicker').selectedOptions[0];if(option)option.textContent=l.text.slice(0,36)||'Empty text'}});
+bindProp('overlayText',(l,v)=>l.text=v.slice(0,180));bindProp('overlayColor',(l,v)=>l.color=v);bindProp('overlayBg',(l,v)=>l.bg=v);
+bindProp('overlaySize',(l,v)=>l.size=+v);bindProp('overlayOpacity',(l,v)=>l.opacity=+v/100);bindProp('overlayX',(l,v)=>l.x=+v/100);bindProp('overlayY',(l,v)=>l.y=+v/100);
+bindProp('overlayFrom',(l,v)=>{l.from=clamp(Number(v)||0,0,selectedClip().end-selectedClip().start);if(l.from>l.to)l.to=l.from;$('overlayTo').value=l.to});
+bindProp('overlayTo',(l,v)=>{l.to=clamp(Number(v)||0,0,selectedClip().end-selectedClip().start);if(l.to<l.from)l.from=l.to;$('overlayFrom').value=l.from});
+$('overlayRemove').onclick=()=>{const clip=selectedClip();if(!clip)return;clip.overlays=clip.overlays.filter(x=>x.id!==selectedOverlayId);selectedOverlayId=null;renderOverlayPicker();editorMsg('Element removed.')};
+$('overlayFront').onclick=()=>{const clip=selectedClip(),l=chosenLayer();if(!clip||!l)return;clip.overlays=clip.overlays.filter(x=>x.id!==l.id).concat(l);renderOverlayPicker()};
+let dragging=false;
+editingCanvas.addEventListener('pointerdown',ev=>{
+ const clip=selectedClip();if(!clip)return;const rect=editingCanvas.getBoundingClientRect(),x=(ev.clientX-rect.left)*360/rect.width,y=(ev.clientY-rect.top)*640/rect.height,ctx=editingCanvas.getContext('2d');
+ const elapsed=(editingVideo.currentTime||clip.start)-clip.start;
+ const candidates=[...(clip.overlays||[])].reverse();
+ for(const l of candidates){if(elapsed<l.from||elapsed>l.to)continue;const b=layerBounds(ctx,l,360,640);
+  if(Math.abs(x-b.x)<b.ww/2+15&&Math.abs(y-b.y)<b.hh/2+15){selectedOverlayId=l.id;dragging=true;editingCanvas.setPointerCapture(ev.pointerId);renderOverlayPicker();return}
+ }
+ selectedOverlayId=null;renderOverlayPicker();
+});
+editingCanvas.addEventListener('pointermove',ev=>{
+ if(!dragging)return;const l=chosenLayer();if(!l)return;const rect=editingCanvas.getBoundingClientRect();l.x=clamp((ev.clientX-rect.left)/rect.width,.05,.95);l.y=clamp((ev.clientY-rect.top)/rect.height,.05,.95);$('overlayX').value=Math.round(l.x*100);$('overlayY').value=Math.round(l.y*100);
+});
+for(const evName of ['pointerup','pointercancel','lostpointercapture'])editingCanvas.addEventListener(evName,()=>dragging=false);
+// --- End creative layer editor ---
+
+async function capture(clip,width,onUpdate){
+ if(!HTMLCanvasElement.prototype.captureStream)throw Error('Browser does not support video capture. Try Chrome.');
+ const mime=mimeChoice();if(!mime)throw Error('No supported video recording format on this phone.');
+ const video=document.createElement('video');video.playsInline=true;video.preload='auto';video.muted=false;
+ let audioCtx,combined,src,dest,recorder,raf=0,interval,finished=false;
+ try{
+  await readyVideo(video,state.url);await seek(video,clip.start);
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=Math.round(width*16/9);
+  const dc=canvas.getContext('2d',{alpha:false});const framing=$('framing').value;
+  const paint=()=>{drawComposite(dc,video,canvas.width,canvas.height,clip,video.currentTime,framing,false);raf=requestAnimationFrame(paint)};paint();
+  combined=canvas.captureStream(25);
+  let audioNote='';
+  try{
+   const A=window.AudioContext||window.webkitAudioContext;if(A){audioCtx=new A();dest=audioCtx.createMediaStreamDestination();src=audioCtx.createMediaElementSource(video);src.connect(dest);dest.stream.getAudioTracks().forEach(t=>combined.addTrack(t));await audioCtx.resume()}
+   else audioNote=' Audio capture unavailable.';
+  }catch(e){audioNote=' Audio not supported by browser.'}
+  const chunks=[];recorder=new MediaRecorder(combined,{mimeType:mime,videoBitsPerSecond:width>=720?2400000:width>=540?1400000:750000});
+  const stopped=new Promise((resolve,reject)=>{recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};recorder.onstop=()=>resolve();recorder.onerror=e=>reject(Error(e.error?.message||'MediaRecorder failed'))});
+  recorder.start(500);
+  await video.play();
+  await new Promise((resolve,reject)=>{
+   const deadline=Date.now()+Math.max(15000,(clip.end-clip.start)*3000+8000);
+   interval=setInterval(()=>{
+    let elapsed=video.currentTime-clip.start;
+    onUpdate(Math.min(100,Math.round(100*elapsed/(clip.end-clip.start))),audioNote);
+    if(video.currentTime>=clip.end-0.08||video.ended){clearInterval(interval);resolve()}
+    else if(video.paused){clearInterval(interval);reject(Error('Playback stopped unexpectedly'))}
+    else if(Date.now()>deadline){clearInterval(interval);reject(Error('Recording timed out'))}
+   },110)
+  });
+  video.pause();recorder.stop();await stopped;finished=true;
+  const isMP4=recorder.mimeType.includes('mp4');const blob=new Blob(chunks,{type:isMP4?'video/mp4':'video/webm'});
+  if(blob.size<500)throw Error('Recorded video file is empty');return {blob,ext:isMP4?'mp4':'webm',audioNote};
+ }finally{
+  clearInterval(interval);cancelAnimationFrame(raf);try{video.pause()}catch(e){};
+  if(recorder&&recorder.state!=='inactive')try{recorder.stop()}catch(e){}
+  if(combined)combined.getTracks().forEach(t=>t.stop());
+  if(audioCtx)try{await audioCtx.close()}catch(e){};
+  video.removeAttribute('src');video.load();
+ }
+}
+// Rendered videos stay in memory until the source is replaced or the app is closed.
+// Explicit save buttons are required: programmatic downloads after a long render may
+// be blocked by Android Chrome because the original user gesture has expired.
+function clearRendered(){
+ for(const url of state.downloads)URL.revokeObjectURL(url);
+ state.downloads=[];state.rendered=[];
+ const box=$('downloads');if(box)box.replaceChildren();
+}
+function fileName(i,ext){return `AI_Clip_Studio_${String(i+1).padStart(2,'0')}.${ext}`}
+function typeConfig(ext){return ext==='mp4'?{description:'MP4 video',accept:{'video/mp4':['.mp4']}}:{description:'WebM video',accept:{'video/webm':['.webm']}}}
+function downloadBlob(item){
+ // Trigger on this direct user tap, not asynchronously at the end of rendering.
+ const a=document.createElement('a');a.href=item.url;a.download=item.name;
+ document.body.append(a);a.click();a.remove();
+ progress(`Download requested: ${item.name}. Check Chrome Downloads or Files → Downloads. The browser may ask you to select a location.`);
+}
+function saveBlobWithPicker(item){
+ if(typeof window.showSaveFilePicker!=='function'||!window.isSecureContext){
+   downloadBlob(item);return;
+ }
+ // This call is issued immediately from the tap to preserve user activation.
+ const pending=window.showSaveFilePicker({suggestedName:item.name,types:[typeConfig(item.ext)],excludeAcceptAllOption:false});
+ pending.then(async handle=>{
+  const writer=await handle.createWritable();
+  try{await writer.write(item.blob);await writer.close();progress(`Saved ${item.name} to the folder you selected.`)}
+  catch(e){try{await writer.abort()}catch{};throw e}
+ }).catch(err=>{
+  if(err.name==='AbortError'){progress('Save canceled. The clip remains ready; choose Save again when you want.');return}
+  progress(`Cannot open Save As picker: ${err.message}. Try Download instead.`,true)
+ });
+}
+function shareBlob(item){
+ const file=new File([item.blob],item.name,{type:item.blob.type});
+ if(!navigator.share||!navigator.canShare||!navigator.canShare({files:[file]})){
+  progress('File sharing is unavailable here. Use Save as or Download.',true);return;
+ }
+ // Native Android share sheet: user can pick a compatible destination or Google Photos.
+ navigator.share({files:[file],title:item.name}).then(()=>progress('File handed to the selected app. Verify it was saved there.')).catch(e=>{
+  if(e.name!=='AbortError')progress('Sharing failed: '+e.message,true)
+ });
+}
+function addRendered(result,i){
+ const {blob,ext}=result,url=URL.createObjectURL(blob),name=fileName(i,ext);
+ const item={blob,ext,url,name};state.downloads.push(url);state.rendered.push(item);
+ const card=document.createElement('div');card.className='downloaditem';
+ const title=document.createElement('strong');title.textContent=`Clip ${i+1} ready · ${ext.toUpperCase()} · ${(blob.size/1048576).toFixed(1)} MB`;
+ const video=document.createElement('video');video.src=url;video.controls=true;video.playsInline=true;video.preload='metadata';video.style.cssText='width:100%;max-width:300px;display:block;margin:10px 0;border-radius:9px;background:#000';
+ const actions=document.createElement('div');actions.className='buttons';
+ const makeButton=(label,callback,cls='secondary')=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=callback;actions.append(b)};
+ makeButton('💾 Save as… choose folder',()=>saveBlobWithPicker(item),'primary');
+ makeButton('▶ Publish to YouTube',()=>ytOpenPublish(item.blob,item.name),'yt-red');
+ makeButton('⬇ Download',()=>downloadBlob(item));
+ makeButton('↗ Share / Photos',()=>shareBlob(item),'quiet');
+ const status=document.createElement('div');status.className='foot';status.textContent='Tap Save as to choose a folder. If not supported, Download saves through Chrome.';
+ card.append(title,video,actions,status);$('downloads').append(card);
+ return item;
+}
+function setupSaveAll(){
+ if(state.rendered.length<2)return;
+ const b=document.createElement('button');b.type='button';b.className='secondary full';b.textContent='💾 Save all clips to one folder';
+ $('downloads').prepend(b);
+ b.onclick=()=>{
+  if(typeof window.showDirectoryPicker!=='function'||!window.isSecureContext){
+   progress('Selecting a folder for all files is not supported in this browser. Use Save as on each clip.');return;
+  }
+  const pending=window.showDirectoryPicker({mode:'readwrite'});
+  pending.then(async dir=>{
+   let written=0;
+   for(const item of state.rendered){
+    const handle=await dir.getFileHandle(item.name,{create:true});const writer=await handle.createWritable();
+    try{await writer.write(item.blob);await writer.close();written++}
+    catch(e){try{await writer.abort()}catch{};throw e}
+   }
+   progress(`Saved ${written} clips to your selected folder.`);
+  }).catch(err=>{
+   if(err.name==='AbortError'){progress('Folder selection canceled.');return}
+   progress('Could not save all files: '+err.message,true);
+  });
+ };
+}
+async function savePlannedClip(index){
+ if(state.busy||!state.file||!state.clips[index])return;
+ if(!mimeChoice()){progress('This browser cannot record video.',true);return}
+ // Choose destination before the time-consuming render. Otherwise Android may
+ // reject opening the picker after the user activation has expired.
+ const ext=mimeChoice().includes('mp4')?'mp4':'webm';let handle=null;
+ if(typeof window.showSaveFilePicker==='function'&&window.isSecureContext){
+  try{handle=await window.showSaveFilePicker({suggestedName:fileName(index,ext),types:[typeConfig(ext)],excludeAcceptAllOption:false})}
+  catch(err){if(err.name==='AbortError'){progress('Save canceled. No clip was rendered.');return}
+   progress('Folder picker unavailable; rendering clip for manual Download instead.');}
+ }
+ state.busy=true;refresh();
+ try{
+  progress(`Rendering clip ${index+1}. Keep Chrome open until it finishes…`);
+  const result=await capture(state.clips[index],Number($('quality').value),(pct,note)=>progress(`Rendering clip ${index+1}: ${pct}%${note}`));
+  const item=addRendered(result,index);
+  if(handle){const writable=await handle.createWritable();try{await writable.write(item.blob);await writable.close();progress(`Clip ${index+1} saved to your chosen folder. You can preview or share it below.`)}catch(e){try{await writable.abort()}catch{};throw e}}
+  else progress(`Clip ${index+1} ready. Tap Download or Save as… below to store it.`);
+ }catch(err){progress(`Cannot save clip: ${err.message}`,true)}
+ finally{state.busy=false;refresh()}
+}
+$('generate').onclick=async()=>{
+ if(state.busy||!state.clips.length||!state.file)return;
+ if(!mimeChoice()){progress('This browser cannot record video. Open in Chrome.',true);return}
+ state.busy=true;refresh();clearRendered();const count=state.clips.length;
+ try{
+  for(let i=0;i<count;i++){
+   const clip=state.clips[i];progress(`Rendering clip ${i+1} of ${count}. Keep Chrome open…`);
+   const result=await capture(clip,Number($('quality').value),(pct,note)=>progress(`Rendering clip ${i+1} of ${count}: ${pct}%${note}`));
+   addRendered(result,i);
+   progress(`Clip ${i+1}/${count} finished; ${count-i-1} remaining.`);
+  }
+  setupSaveAll();
+  progress(`Generated ${count} clip${count===1?'':'s'}. To actually save: tap Save as… and choose your folder, or Download. Files are not stored until you tap one of these.`)
+ }catch(err){setupSaveAll();progress(`Rendering stopped: ${err.message}. Clips already generated are below; save them separately.`,true)}
+ finally{state.busy=false;refresh()}
+};
+$('helpButton').onclick=()=>$('help').showModal();$('closeHelp').onclick=()=>$('help').close();
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+refresh();
+// AI Clip Studio v5: Google Identity Services + YouTube Data API v3 + Analytics API.
+// Client ID is public app configuration. OAuth access tokens are kept in memory only.
+const YT_SCOPES = [
+ 'https://www.googleapis.com/auth/youtube.upload',
+ 'https://www.googleapis.com/auth/youtube.readonly',
+ 'https://www.googleapis.com/auth/yt-analytics.readonly'
+];
+const yt = {token:null,expiresAt:0,channel:null,uploadsId:null,clientId:'',pending:null,external:null,uploading:false,xhr:null,auth:null};
+const ytStatus=(msg,error=false)=>{const n=$('ytStatus');n.textContent=msg;n.classList.toggle('bad',!!error)};
+const ytCount=v=>v===undefined||v===null?'—':new Intl.NumberFormat('en-US').format(Number(v));
+const ytSafeClientId=id=>/^\d+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(String(id).trim());
+function ytIsHosted(){return location.protocol==='https:'||(location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname))}
+function ytClientId(){return String(yt.clientId||window.CLIP_STUDIO_YOUTUBE_CLIENT_ID||'').trim()}
+function ytReady(){return Boolean(yt.token)&&Date.now()<yt.expiresAt-15000}
+function ytRenderConnection(){
+ $('ytRefresh').disabled=!ytReady();$('ytDisconnect').disabled=!yt.token;
+ $('ytPublishExternal').disabled=!ytReady()||!yt.external||yt.uploading;
+ $('ytConnect').textContent=ytReady()?'Reconnect / switch channel':'Connect YouTube channel';
+ $('ytChannelInfo').textContent=yt.channel?`Connected to: ${yt.channel.snippet?.title||yt.channel.id} (${yt.channel.id})`:'Channel: not connected';
+}
+function ytLoadSettings(){
+ try{yt.clientId=localStorage.getItem('clipstudio_yt_client_id')||''}catch(e){}
+ $('ytClientId').value=ytClientId();
+ if(ytIsHosted())ytStatus('YouTube not connected. Set a Google OAuth client ID (once), then tap Connect YouTube channel.');
+ else ytStatus('YouTube sign-in is unavailable from a local .html file. Deploy this app to HTTPS and configure Google OAuth first. The video editor still works offline.',true);
+ ytRenderConnection();
+}
+$('ytSaveClient').onclick=()=>{
+ const id=$('ytClientId').value.trim();
+ if(!ytSafeClientId(id)){ytStatus('That is not a valid Web OAuth client ID. It should end with .apps.googleusercontent.com.',true);return}
+ yt.clientId=id;try{localStorage.setItem('clipstudio_yt_client_id',id)}catch(e){}
+ ytStatus('Client ID saved on this phone. Host this app on HTTPS, register the exact origin in Google Cloud and tap Connect.');
+};
+$('ytConnect').onclick=()=>{
+ if(!ytIsHosted()){ytStatus('Google OAuth will not run from file://. Use the published HTTPS app link. See first-time setup above.',true);$('ytSetup').open=true;return}
+ const client_id=ytClientId();if(!ytSafeClientId(client_id)){ytStatus('First enter your Google OAuth Web client ID.',true);$('ytSetup').open=true;return}
+ if(!window.google?.accounts?.oauth2){ytStatus('Google sign-in library is not available. Check internet and reload the hosted page.',true);return}
+ try{
+  yt.auth=google.accounts.oauth2.initTokenClient({
+   client_id,scope:YT_SCOPES.join(' '),
+   callback:async response=>{
+    if(response.error){ytStatus(`Google connection failed: ${response.error_description||response.error}`,true);return}
+    if(!response.access_token){ytStatus('No access token received. Try connecting again.',true);return}
+    if(!YT_SCOPES.every(scope=>(response.scope||'').split(' ').includes(scope))){
+      ytStatus('Some YouTube permissions were not granted. Reconnect and grant upload, channel read and analytics access.',true);return;
+    }
+    yt.token=response.access_token;yt.expiresAt=Date.now()+(Number(response.expires_in)||3600)*1000;
+    yt.channel=null;ytRenderConnection();ytStatus('Connected to Google. Loading the YouTube channel…');
+    await ytRefreshDashboard();
+   },
+   error_callback:error=>ytStatus('Google sign-in popup failed or was closed. '+(error?.message||''),true)
+  });
+  yt.auth.requestAccessToken({prompt:'select_account'});
+ }catch(err){ytStatus('Cannot initialize Google OAuth: '+err.message,true)}
+};
+$('ytDisconnect').onclick=()=>{
+ const token=yt.token;yt.token=null;yt.expiresAt=0;yt.channel=null;yt.uploadsId=null;yt.external=null;
+ $('ytExternalFile').value='';$('ytFileInfo').textContent='No external video selected';
+ ytRenderConnection();ytStatus('Disconnected for this browser session. Your Google client ID is still saved locally.');
+ $('ytStats').querySelectorAll('strong').forEach(el=>el.textContent='—');
+ $('ytVideos').replaceChildren();$('ytComments').replaceChildren();$('ytChart').replaceChildren();
+ $('ytAnalyticsSummary').textContent='YouTube Analytics not loaded.';
+ if(token&&window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(token,()=>{});
+};
+function ytAuthHeader(){if(!ytReady())throw Error('YouTube session expired. Tap Connect YouTube channel again.');return {Authorization:'Bearer '+yt.token}}
+async function ytApi(url,options={}){
+ const response=await fetch(url,{...options,headers:{...ytAuthHeader(),...(options.headers||{})}});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok){const message=data.error?.message||`HTTP ${response.status}`;throw Error(`YouTube API: ${message}`)}
+ return data;
+}
+const ytURL=(base,values)=>{const u=new URL(base);Object.entries(values).forEach(([k,v])=>u.searchParams.set(k,String(v)));return u.toString()};
+async function ytRefreshDashboard(){
+ if(!ytReady()){ytStatus('YouTube session expired. Reconnect first.',true);ytRenderConnection();return}
+ $('ytRefresh').disabled=true;
+ try{
+  const data=await ytApi(ytURL('https://www.googleapis.com/youtube/v3/channels',{part:'snippet,statistics,contentDetails',mine:'true'}));
+  const ch=data.items?.[0];if(!ch)throw Error('This Google login did not return a YouTube channel. Select the Google account associated with your channel.');
+  yt.channel=ch;yt.uploadsId=ch.contentDetails?.relatedPlaylists?.uploads;
+  ytRenderConnection();ytRenderChannelStats(ch,[]);
+  ytStatus('Connected. Channel stats loaded. Loading recent videos, analytics and comments…');
+  const results=await Promise.allSettled([ytFetchRecentVideos(),ytFetchAnalytics(),ytFetchComments()]);
+  const failures=results.filter(r=>r.status==='rejected').map(r=>r.reason?.message||'Unknown API failure');
+  ytStatus(failures.length?'Channel connected; some dashboard panels could not load:\n'+failures.join('\n'):'Channel connected. Dashboard synced with YouTube.');
+ }catch(e){ytStatus(e.message,true)}
+ finally{ytRenderConnection()}
+}
+$('ytRefresh').onclick=()=>ytRefreshDashboard();
+$('ytPeriod').onchange=()=>{if(ytReady())ytFetchAnalytics().catch(e=>$('ytAnalyticsSummary').textContent=e.message)};
+function ytRenderChannelStats(ch,videos){
+ const total=videos.reduce((x,v)=>({views:x.views+Number(v.statistics?.viewCount||0),likes:x.likes+Number(v.statistics?.likeCount||0),comments:x.comments+Number(v.statistics?.commentCount||0)}),{views:0,likes:0,comments:0});
+ const stats=[['Subscribers',ch.statistics?.hiddenSubscriberCount?'Hidden':ytCount(ch.statistics?.subscriberCount)],['Lifetime channel views',ytCount(ch.statistics?.viewCount)],['Recent uploads likes',ytCount(total.likes)],['Recent uploads comments',ytCount(total.comments)]];
+ const target=$('ytStats');target.replaceChildren();
+ stats.forEach(([label,value])=>{const card=document.createElement('div');card.className='yt-stat';const s=document.createElement('small');s.textContent=label;const b=document.createElement('strong');b.textContent=value;card.append(s,b);target.append(card)});
+ const ratio=total.views>0?(100*total.likes/total.views).toFixed(2):'—';
+ $('ytOverview').value=videos.length?`Recent uploads: ${ratio} likes / 100 views`:'Recent uploads not yet loaded';
+}
+async function ytFetchRecentVideos(){
+ if(!yt.uploadsId)throw Error('No uploads playlist returned for this channel.');
+ const playlist=await ytApi(ytURL('https://www.googleapis.com/youtube/v3/playlistItems',{part:'contentDetails',playlistId:yt.uploadsId,maxResults:12}));
+ const ids=(playlist.items||[]).map(i=>i.contentDetails?.videoId).filter(Boolean);
+ const box=$('ytVideos');box.replaceChildren();
+ if(!ids.length){const d=document.createElement('div');d.className='empty';d.textContent='No videos found on this channel.';box.append(d);ytRenderChannelStats(yt.channel,[]);return}
+ const data=await ytApi(ytURL('https://www.googleapis.com/youtube/v3/videos',{part:'snippet,statistics,status',id:ids.join(',')}));
+ const byId=new Map((data.items||[]).map(v=>[v.id,v]));const videos=ids.map(id=>byId.get(id)).filter(Boolean);
+ ytRenderChannelStats(yt.channel,videos);
+ for(const v of videos){
+  const row=document.createElement('div');row.className='ytvideo';
+  const img=document.createElement('img');img.src=v.snippet?.thumbnails?.default?.url||'';img.alt='Video thumbnail';img.loading='lazy';
+  const meta=document.createElement('div');meta.className='ytmeta';const title=document.createElement('b');title.textContent=v.snippet?.title||'Untitled video';
+  const counts=document.createElement('small');counts.textContent=`${ytCount(v.statistics?.viewCount)} views · ${ytCount(v.statistics?.likeCount)} likes · ${ytCount(v.statistics?.commentCount)} comments · ${v.status?.privacyStatus||'unknown'}`;
+  const link=document.createElement('a');link.target='_blank';link.rel='noopener noreferrer';link.href='https://www.youtube.com/watch?v='+encodeURIComponent(v.id);link.textContent='Open on YouTube';
+  meta.append(title,counts,link);row.append(img,meta);box.append(row);
+ }
+}
+function ytDate(days){const d=new Date();d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)}
+async function ytFetchAnalytics(){
+ const days=Number($('ytPeriod').value)||28;
+ const params={ids:'channel==MINE',startDate:ytDate(-days-2),endDate:ytDate(-2),metrics:'views,estimatedMinutesWatched,subscribersGained',dimensions:'day',sort:'day'};
+ const data=await ytApi(ytURL('https://youtubeanalytics.googleapis.com/v2/reports',params));
+ const rows=data.rows||[];
+ const max=Math.max(1,...rows.map(r=>Number(r[1]||0)));
+ const graph=$('ytChart');graph.replaceChildren();
+ if(!rows.length){graph.textContent='No analytics rows returned for this period yet.';return}
+ for(const row of rows){const bar=document.createElement('i');bar.style.height=`${Math.max(3,100*Number(row[1]||0)/max)}%`;bar.title=`${row[0]} · ${ytCount(row[1])} views`;graph.append(bar)}
+ const sums=rows.reduce((a,r)=>[a[0]+Number(r[1]||0),a[1]+Number(r[2]||0),a[2]+Number(r[3]||0)],[0,0,0]);
+ $('ytAnalyticsSummary').textContent=`Analytics (${rows[0][0]} to ${rows.at(-1)[0]}): ${ytCount(sums[0])} views · ${ytCount(Math.round(sums[1]))} watch minutes · ${ytCount(sums[2])} subscribers gained · ${sums[0]>0?(1000*sums[2]/sums[0]).toFixed(2):'—'} subscribers gained per 1,000 views. These are aggregate trends, not links between individual likes and subscribers. Recent days may be delayed.`;
+}
+async function ytFetchComments(){
+ const d=await ytApi(ytURL('https://www.googleapis.com/youtube/v3/commentThreads',{part:'snippet',allThreadsRelatedToChannelId:yt.channel.id,order:'time',maxResults:10,textFormat:'plainText'}));
+ const box=$('ytComments');box.replaceChildren();
+ if(!d.items?.length){const el=document.createElement('div');el.className='empty';el.textContent='No accessible comments returned.';box.append(el);return}
+ for(const thread of d.items){const c=thread.snippet?.topLevelComment?.snippet;if(!c)continue;
+  const item=document.createElement('div');item.className='ytcomment';const who=document.createElement('strong');who.textContent=c.authorDisplayName||'YouTube user';
+  const info=document.createElement('small');info.textContent=`${new Date(c.publishedAt).toLocaleDateString()} · ${ytCount(c.likeCount)} likes · ${ytCount(thread.snippet?.totalReplyCount)} replies`;
+  const body=document.createElement('p');body.textContent=String(c.textOriginal||c.textDisplay||'').slice(0,500);
+  const link=document.createElement('a');link.href='https://www.youtube.com/watch?v='+encodeURIComponent(thread.snippet?.videoId||'');link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open video';
+  item.append(who,info,body,link);box.append(item)}
+}
+$('ytExternalFile').onchange=e=>{yt.external=e.target.files?.[0]||null;
+ $('ytFileInfo').textContent=yt.external?`${yt.external.name} · ${(yt.external.size/1048576).toFixed(1)} MB`:'No external video selected';ytRenderConnection();
+};
+$('ytPublishExternal').onclick=()=>yt.external&&ytOpenPublish(yt.external,yt.external.name);
+function ytOpenPublish(file,name){
+ if(!ytReady()){ytStatus('Connect your YouTube channel first. Your edited clip is still safe here.',true);$('youtubeStudio').scrollIntoView({behavior:'smooth'});return}
+ if(!file||file.size<1){ytStatus('Cannot publish an empty file.',true);return}
+ yt.pending={file,name};$('ytPendingName').textContent=`Selected: ${name} · ${(file.size/1048576).toFixed(1)} MB`;
+ $('ytTitle').value=(name||'My Short').replace(/\.(mp4|webm|mov)$/i,'').replace(/[_-]/g,' ').slice(0,100);
+ $('ytDescription').value='';$('ytVisibility').value='private';$('ytMadeForKids').value='';$('ytRights').checked=false;
+ $('ytUploadProgress').textContent='Review all details before publishing. Nothing has been uploaded.';
+ $('ytUploadResult').replaceChildren();$('ytConfirmUpload').disabled=false;$('ytCancelUpload').hidden=true;
+ $('ytPublishDialog').showModal();
+}
+async function ytPublishPlannedClip(index){
+ if(state.busy||yt.uploading||!state.clips[index])return;
+ if(!ytReady()){ytStatus('First connect YouTube in the YouTube Studio panel below. This requires the deployed HTTPS app.',true);$('youtubeStudio').scrollIntoView({behavior:'smooth'});return}
+ state.busy=true;refresh();
+ try{
+  progress(`Rendering clip ${index+1} for YouTube. Keep Chrome open...`);
+  const rendered=await capture(state.clips[index],Number($('quality').value),(pct,note)=>progress(`Rendering for YouTube: ${pct}% ${note}`));
+  const item=addRendered(rendered,index);progress('Clip ready. Please review the YouTube upload details.');
+  ytOpenPublish(item.blob,item.name);
+ }catch(e){progress('Cannot prepare the YouTube upload: '+e.message,true)}
+ finally{state.busy=false;refresh()}
+}
+$('ytClosePublish').onclick=()=>{if(!yt.uploading)$('ytPublishDialog').close()};
+$('ytPublishDialog').addEventListener('cancel',e=>{if(yt.uploading)e.preventDefault()});
+$('ytCancelUpload').onclick=()=>{if(yt.uploading&&yt.xhr){yt.xhr.abort()}};
+function ytUploadMultipart(file,metadata,onProgress){
+ return new Promise((resolve,reject)=>{
+  const boundary='ais'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+  const mime=file.type&&file.type.startsWith('video/')?file.type:(/\.webm$/i.test(file.name||'')?'video/webm':'video/mp4');
+  const body=new Blob([`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n`,JSON.stringify(metadata),`\r\n--${boundary}\r\nContent-Type: ${mime}\r\n\r\n`,file,`\r\n--${boundary}--\r\n`],{type:`multipart/related; boundary=${boundary}`});
+  const xhr=new XMLHttpRequest();yt.xhr=xhr;
+  xhr.open('POST','https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart&part=snippet,status');
+  xhr.setRequestHeader('Authorization','Bearer '+yt.token);
+  xhr.setRequestHeader('Content-Type',`multipart/related; boundary=${boundary}`);
+  xhr.timeout=15*60*1000;
+  xhr.upload.onprogress=e=>{if(e.lengthComputable)onProgress(Math.round(100*e.loaded/e.total))};
+  xhr.onload=()=>{
+   let result={};try{result=JSON.parse(xhr.responseText||'{}')}catch(e){}
+   if(xhr.status>=200&&xhr.status<300&&result.id)resolve(result);
+   else reject(Error(result.error?.message||`YouTube upload failed (${xhr.status})`));
+  };
+  xhr.onerror=()=>reject(Error('Network/CORS upload error. Check HTTPS, API permissions, and your internet connection.'));
+  xhr.ontimeout=()=>reject(Error('YouTube upload timed out. Check your YouTube channel before retrying to prevent duplicates.'));
+  xhr.onabort=()=>reject(Error('Upload canceled. Check YouTube Studio before trying again.'));
+  xhr.send(body);
+ });
+}
+$('ytConfirmUpload').onclick=async()=>{
+ if(yt.uploading)return;
+ const file=yt.pending?.file;
+ const title=$('ytTitle').value.trim(),description=$('ytDescription').value.trim();
+ const visibility=$('ytVisibility').value,audience=$('ytMadeForKids').value;
+ if(!file||!file.size){$('ytUploadProgress').textContent='No clip is selected.';return}
+ if(!ytReady()){$('ytUploadProgress').textContent='Google connection expired. Close this dialog and reconnect.';return}
+ if(!title||title.length>100){$('ytUploadProgress').textContent='Enter a title between 1 and 100 characters.';return}
+ if(!['private','unlisted','public'].includes(visibility)||!['no','yes'].includes(audience)){$('ytUploadProgress').textContent='Choose visibility and whether the video is made for kids.';return}
+ if(!$('ytRights').checked){$('ytUploadProgress').textContent='Please confirm that you have permission to publish this footage.';return}
+ yt.uploading=true;$('ytConfirmUpload').disabled=true;$('ytCancelUpload').hidden=false;$('ytClosePublish').disabled=true;ytRenderConnection();
+ const metadata={snippet:{title,description,categoryId:'22'},status:{privacyStatus:visibility,selfDeclaredMadeForKids:audience==='yes'}};
+ try{
+  $('ytUploadProgress').textContent='Uploading: 0%. Keep Chrome open and online.';
+  const uploaded=await ytUploadMultipart(file,metadata,p=>{$('ytUploadProgress').textContent=`Uploading to YouTube: ${p}%. Keep Chrome open…`});
+  $('ytUploadProgress').textContent='YouTube accepted the upload. Processing on YouTube may continue.';
+  const link=document.createElement('a');link.href='https://www.youtube.com/watch?v='+encodeURIComponent(uploaded.id);link.target='_blank';link.rel='noopener noreferrer';link.textContent='Open uploaded video on YouTube';
+  $('ytUploadResult').replaceChildren(link);ytStatus(`Uploaded successfully: ${title}. Video ID ${uploaded.id}.`);
+  ytRefreshDashboard().catch(()=>{});
+ }catch(e){$('ytUploadProgress').textContent=`Upload failed: ${e.message}\nIf the connection dropped, check your channel to avoid accidentally uploading twice.`;}
+ finally{yt.uploading=false;yt.xhr=null;$('ytConfirmUpload').disabled=false;$('ytCancelUpload').hidden=true;$('ytClosePublish').disabled=false;ytRenderConnection()}
+};
+ytLoadSettings();
+
+</script></body></html>
