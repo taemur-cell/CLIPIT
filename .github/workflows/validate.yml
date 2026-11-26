@@ -1,0 +1,63 @@
+name: CLIPIT v6 smoke tests
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check browser JavaScript
+        run: |
+          node --check context_engine.js
+          python - <<'PY'
+          from pathlib import Path
+          html=Path("index.html").read_text()
+          beginning=html.rfind("<script>")
+          ending=html.rfind("</script>")
+          if beginning<0 or ending<=beginning:
+              raise RuntimeError("CLIPIT main JavaScript missing")
+          Path("/tmp/clipit-inline.js").write_text(html[beginning+8:ending])
+          PY
+          node --check /tmp/clipit-inline.js
+      - name: Check Colab notebook Python syntax
+        run: |
+          python - <<'PY'
+          import ast, json
+          from pathlib import Path
+          notebook=json.loads(Path("Cloud_Processing_Colab.ipynb").read_text())
+          checked=0
+          for index,cell in enumerate(notebook["cells"]):
+              if cell["cell_type"]!="code":continue
+              source="".join(cell.get("source",[]))
+              lines=["pass" if l.lstrip().startswith(("!","%")) else l for l in source.splitlines()]
+              ast.parse("\n".join(lines),filename=f"notebook-cell-{index}")
+              checked+=1
+          print("Notebook cells validated:",checked)
+          PY
+      - name: Context highlight scoring checks
+        run: |
+          node - <<'JS'
+          require("./context_engine.js");
+          const engine=globalThis.ClipitContextEngine;
+          if(!engine)throw Error("Context engine not exported");
+          const srt="1\n00:00:12,000 --> 00:00:15,000\nHello\n\n2\n00:00:40,000 --> 00:00:43,000\nکیا یہ سچ ہے؟\n";
+          if(engine.fromText(srt).transcript.length!==2)throw Error("SRT Urdu/English parse failed");
+          const data={duration_seconds:100,transcript:[
+            {start:10,end:15,text:"It is sunny."},
+            {start:39,end:45,text:"Why are you shouting? کیا ہوا؟"},
+            {start:70,end:76,text:"Everybody is laughing."}
+          ],visuals:[
+            {time:41,caption:"two people arguing and fighting",motion_score:.85,scene_change_score:.9},
+            {time:73,caption:"people dancing",motion_score:.6,scene_change_score:.2}
+          ]};
+          const ranked=engine.recommend(data,{targetSeconds:20,count:3});
+          if(!ranked.some(x=>x.evidence.action>0))throw Error("Action ranking failed");
+          if(ranked.some(x=>x.end>100||x.start<0||x.start>=x.end))throw Error("Out of bounds ranges");
+          console.log("CLIPIT v6 contextual recommendations:",JSON.stringify(ranked));
+          JS
