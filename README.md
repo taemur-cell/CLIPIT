@@ -1,31 +1,37 @@
-# CLIPIT — AI Clip Studio v5
+# CLIPIT — AI Clip Studio v6 (context-analysis beta)
 
-Phone-first video editing and YouTube publishing interface. The editor supports local video selection, clip suggestions, manual cuts, overlays and saving, with Google OAuth-based YouTube integration awaiting account configuration.
+Free, phone-first video editor with an optional experimental context-analysis stage and YouTube publishing / channel insights.
 
-## Open the app
-
-After enabling **Settings → Pages → Deploy from a branch → main → /(root)**, the expected address is:
-
+## Website
 https://taemur-cell.github.io/CLIPIT/
 
-The link is **not confirmed live until GitHub Pages deployment completes**.
+## How to make context-aware Shorts
+1. Use your phone to choose footage that you own or have rights to edit.
+2. For **real Urdu/English transcription and sampled visual captions**, launch the [free Google Colab notebook](https://colab.research.google.com/github/taemur-cell/CLIPIT/blob/main/Cloud_Processing_Colab.ipynb) and put the video in your own Google Drive at `AI-Clip-Studio/INPUT`.
+3. Run all cells; find `context_analysis.json` in `AI-Clip-Studio/OUTPUT/<run>/` when the analysis finishes.
+4. In the CLIPIT browser app, open the **same video** and import that report in **Context AI — Dialogue + Actions**.
+5. Tap **Create context-aware clip suggestions**. Review/adjust every cut, add captions and save or open the YouTube publish review.
+6. If you have an existing `.srt` / `.vtt` file, you can import it directly without Colab; this uses spoken text but no action captions.
 
-## Files
+## What currently works
+- Video import, visual-change clip suggestions, custom timestamps, preview, 9:16 editor overlays and local rendering, subject to browser codec/phone memory limits
+- v6 context-report import, ranked highlight suggestions based on **actual transcript and provided video-frame descriptions**, caption-bar creation, searchable dialogue
+- OAuth-based YouTube publish button, upload-review form, channel dashboard code (live authorization and uploads still require per-account testing)
 
-- `index.html` — browser app
-- `GUIDE.html` — beginner guide
-- `PRIVACY.html` — app privacy / permissions
-- `DEPLOY_AND_CONNECT.md` — owner instructions for Google Cloud, OAuth and live testing
-- `Cloud_Processing_Colab.ipynb` — optional manual notebook; not part of the automatic browser editor
-- `manifest.webmanifest`, `sw.js`, `icon.svg` — installable web app shell
+## What is NOT yet automatic
+- The free Colab notebook requires manual starting, and may disconnect or hit download/compute limits
+- The app does not directly upload source videos for remote AI analysis: **GitHub Pages is static hosting**, not a video AI backend
+- Image captions are approximate, not verified scene understanding; the BLIP caption model may fail or hallucinate
+- No server-side scheduler, 24/7 worker, unattended posting, or unlimited length guarantee
+- Real YouTube account posting has not yet been confirmed end-to-end for this project
 
-## One-time YouTube setup
+## Important files
+- `index.html` — Android Chrome/PWA editor and optional YouTube publishing
+- `context_engine.js` — deterministic Urdu/English transcript + visual caption highlight ranking
+- `Cloud_Processing_Colab.ipynb` — free, manual audio/vision report creator
+- `GUIDE.html` — phone-friendly walkthrough
+- `DEPLOY_AND_CONNECT.md` — YouTube OAuth setup
+- `PRIVACY.html` — video and credential handling
+- `.github/workflows/validate.yml` — free syntax and scoring smoke tests
 
-1. Enable YouTube Data API v3 and YouTube Analytics API in a Google Cloud project.
-2. Set up a **Web application OAuth client** and authorize the JavaScript origin `https://taemur-cell.github.io`.
-3. Enter the OAuth **public client ID**, not a client secret, in the YouTube setup area of the deployed app.
-4. Connect your own channel and test an original short upload as **Private** before publishing publicly.
-
-**Status:** Editor code has passed simulated browser/API tests. This deployment is not yet verified with a real YouTube account, and does not include a 24/7 background server. Google/YouTube account access needs user authorization.
-
-**Media rights:** Only upload videos you have permission to publish. Cropping and overlays do not provide copyright clearance.
+**Permissions and copyrights:** Only publish footage you may legally reuse. Cropping, captions, or overlays cannot guarantee protection from copyright claims. No client secret or Google access token belongs in this public repository.
