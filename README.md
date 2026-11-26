@@ -1,25 +1,31 @@
-# AI Clip Studio v5.0 — Video Editor + YouTube
+# CLIPIT — AI Clip Studio v5
 
-The existing v4.3 phone editor is preserved. Added YouTube connection (OAuth token model), Publish buttons, upload-review dialog, direct file upload, a dashboard for channel subscribers/views, recent video likes/comments, recent comments and YouTube Analytics trends.
+Phone-first video editing and YouTube publishing interface. The editor supports local video selection, clip suggestions, manual cuts, overlays and saving, with Google OAuth-based YouTube integration awaiting account configuration.
 
-## First step
+## Open the app
 
-Read **DEPLOY_AND_CONNECT.md**. YouTube integration requires a registered HTTPS origin and a public OAuth Web client ID. Opening `AI_Clip_Studio_v5_OPEN_ME.html` as a local file will still allow video editing, but YouTube sign-in cannot work there. You can share the hosted URL with your friend once Google OAuth is configured.
+After enabling **Settings → Pages → Deploy from a branch → main → /(root)**, the expected address is:
+
+https://taemur-cell.github.io/CLIPIT/
+
+The link is **not confirmed live until GitHub Pages deployment completes**.
 
 ## Files
 
-- `index.html` — official app entry point on GitHub Pages.
-- `AI_Clip_Studio_v5_OPEN_ME.html` — same app, standalone preview. YouTube OAuth only on an allowed HTTPS origin.
-- `GUIDE.html` — phone-friendly end-user guide.
-- `DEPLOY_AND_CONNECT.md` — detailed owner setup and troubleshooting.
-- `PRIVACY.html` — base privacy language to adapt for your public app.
-- `manifest.webmanifest`, `sw.js`, `icon-*.png` — PWA installability; offline caching restricted to same-origin app shell files.
-- `AI_Clip_Studio_Colab.ipynb` — **optional separate** Urdu/English speech AI experiment from earlier builds; it is not directly connected to the v5 editor.
+- `index.html` — browser app
+- `GUIDE.html` — beginner guide
+- `PRIVACY.html` — app privacy / permissions
+- `DEPLOY_AND_CONNECT.md` — owner instructions for Google Cloud, OAuth and live testing
+- `Cloud_Processing_Colab.ipynb` — optional manual notebook; not part of the automatic browser editor
+- `manifest.webmanifest`, `sw.js`, `icon.svg` — installable web app shell
 
-## Status and security
+## One-time YouTube setup
 
-- JavaScript syntax checked; UI and OAuth/API endpoints simulated successfully in a local browser test; a video upload request's multipart structure and a render-first publish path were tested using mock YouTube endpoints. No real YouTube access or publish was performed.
-- The Google OAuth client ID is public app configuration. No client secret is required in browser code. Never insert a client secret into HTML.
-- Google OAuth tokens stay in memory only. Dashboard only reads the connected user's YouTube API data; it does not invent metrics.
-- Real YouTube publishing will only become operable after app deployment, OAuth authorization and testing on a channel.
-- This is not a 24/7 automatic uploader; each upload requires a real person to confirm details, visibility, audience and rights.
+1. Enable YouTube Data API v3 and YouTube Analytics API in a Google Cloud project.
+2. Set up a **Web application OAuth client** and authorize the JavaScript origin `https://taemur-cell.github.io`.
+3. Enter the OAuth **public client ID**, not a client secret, in the YouTube setup area of the deployed app.
+4. Connect your own channel and test an original short upload as **Private** before publishing publicly.
+
+**Status:** Editor code has passed simulated browser/API tests. This deployment is not yet verified with a real YouTube account, and does not include a 24/7 background server. Google/YouTube account access needs user authorization.
+
+**Media rights:** Only upload videos you have permission to publish. Cropping and overlays do not provide copyright clearance.
