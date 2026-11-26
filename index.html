@@ -48,7 +48,7 @@
  <button id="contextMake" class="primary full" type="button" disabled>Create context-aware clip suggestions</button>
  <p class="foot">Action understanding only applies if the imported analysis includes visual descriptions from the optional image-caption model. Captions may be inaccurate. Always review the selected moments and subtitles before publishing.</p>
  </section>
- <section class="card results"><div class="cardhead"><h2>3. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
+ <section class="card results"><div class="cardhead"><h2>4. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
 <div class="two settings"><label>Resolution<select id="quality"><option value="360">Light • 360 × 640 (OPPO)</option><option value="540" selected>Balanced • 540 × 960</option><option value="720">High • 720 × 1280 (Pixel 7)</option></select></label><label>Framing<select id="framing"><option value="fit" selected>Fit whole picture</option><option value="fill">Center crop to 9:16</option></select></label></div>
 <button class="primary full" id="generate" disabled>Generate all clips with edits</button>
 <div id="progress" class="progress" aria-live="polite">Choose a video and make a clip first.</div><div id="downloads" class="downloads"></div>
@@ -57,7 +57,7 @@
 <section class="card"><div class="cardhead"><h2>Urdu & English / Cloud AI</h2><span class="tiny">Separate optional workflow</span></div><p class="helper">The optional notebook provides Urdu/English transcription and speech-based candidate highlights after a manual Google Colab run. It is <b>not connected</b> to this app, and cannot start automatically when you import a file here. You can generate clips on the phone above without it.</p><div class="buttons"><a class="quiet buttonlike" href="./GUIDE.html">Read full guide</a><a class="quiet buttonlike" href="./Cloud_Processing_Colab.ipynb" download>Get Colab notebook</a></div></section>
 <footer>Use only video you own or have rights to reuse. Changing crops, subtitles or watermarks cannot guarantee freedom from copyright claims.</footer>
 <section class="card ytcard" id="youtubeStudio">
-  <div class="cardhead"><h2>4. YouTube Studio — Publish & Insights</h2><span class="tiny">Official YouTube APIs</span></div>
+  <div class="cardhead"><h2>5. YouTube Studio — Publish & Insights</h2><span class="tiny">Official YouTube APIs</span></div>
   <div class="ytstate" id="ytStatus">Not connected. To activate publishing, host this app on HTTPS and enter your Google OAuth client ID.</div>
   <details class="ytsetupdetails" id="ytSetup"><summary>First-time YouTube connection setup</summary>
     <p class="yt-note" style="margin-top:12px">The OAuth Client ID for CLIPIT is preconfigured. For sign-in, open the hosted HTTPS app and ensure YouTube Data API v3, YouTube Analytics API, and the OAuth consent screen are configured in its Google Cloud project. The authorized JavaScript origin must be <b>https://taemur-cell.github.io</b>. No client secret belongs in this app.</p>
@@ -267,11 +267,11 @@ $('contextFile').addEventListener('change',async event=>{
  if(file.size>8*1024*1024){clipitStatus('Analysis file is larger than 8 MB. Export fewer segments, or use shorter source footage.',true);return}
  try{
   const raw=await file.text();const engine=window.ClipitContextEngine;if(!engine)throw Error('Context engine did not load. Reload the app.');
-  const data=/\.(srt|vtt)$/i.test(file.name)?engine.fromText(raw,''):JSON.parse(raw);
+  const data=/\.(srt|vtt|txt)$/i.test(file.name)?engine.fromText(raw,''):JSON.parse(raw);
   const parsed=engine.normalise(data);
   if(!parsed.transcript.length&&!parsed.visuals.length)throw Error('No timed transcript or visual event data in this file.');
   if(state.file&&parsed.source_filename&&parsed.source_filename!==state.file.name)throw Error('This analysis is for '+parsed.source_filename+', not '+state.file.name+'. Re-select the matching video or generate a new report.');
-  if(state.duration&&Math.abs(parsed.duration-state.duration)>Math.max(6,state.duration*.04))throw Error('Analysis duration does not match your selected video. Please import the correct file.');
+  if(state.duration&&parsed.kind!=='subtitle_only'&&Math.abs(parsed.duration-state.duration)>Math.max(6,state.duration*.04))throw Error('Analysis duration does not match your selected video. Please import the correct file.');
   state.contextData=parsed;clipitTranscriptMatches();refresh();
   clipitStatus('Loaded '+parsed.transcript.length+' timed dialogue segments and '+parsed.visuals.length+' visual observations ('+parsed.visualCaptions+' contain action descriptions). Tap Create context-aware clip suggestions.');
  }catch(e){state.contextData=null;refresh();clipitStatus('Could not import: '+e.message,true)}
