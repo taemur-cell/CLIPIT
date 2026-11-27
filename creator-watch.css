@@ -37,4 +37,9 @@
   body.clipit-mobile #creatorWatch .watch-counter {font-size:11px;color:#b5a4ff;font-weight:700}
   body.clipit-mobile #creatorWatch .watch-legal {font-size:11px;line-height:1.6;color:#9ca7be}
   body.clipit-mobile #creatorWatch #watchMore[hidden] {display:none}
+  body.clipit-mobile #creatorWatch .watch-choice-dialog {width:min(380px,92vw);max-width:92vw;padding:20px;border-radius:15px}
+  body.clipit-mobile #creatorWatch .watch-choice-dialog h3 {font-size:18px;margin:0 0 10px}
+  body.clipit-mobile #creatorWatch .watch-choice-actions {display:grid;gap:10px;margin-top:15px}
+  body.clipit-mobile #creatorWatch .watch-choice-actions a,
+  body.clipit-mobile #creatorWatch .watch-choice-actions button {display:flex;align-items:center;justify-content:center;min-height:48px;width:100%;border-radius:9px;text-align:center;text-decoration:none;font-weight:700}
 }
