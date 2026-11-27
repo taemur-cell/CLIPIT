@@ -20,6 +20,15 @@
   body.clipit-mobile #creatorWatch .watch-block {border-top:1px solid #323952;padding-top:17px;margin-top:17px}
   body.clipit-mobile #creatorWatch .watch-video {padding:14px 0;border-bottom:1px solid #323952}
   body.clipit-mobile #creatorWatch .watch-video:last-child {border-bottom:0}
+  body.clipit-mobile #creatorWatch .watch-video-main {display:flex;align-items:flex-start;gap:12px}
+  body.clipit-mobile #creatorWatch .watch-thumbnail {display:block;position:relative;flex:0 0 40%;max-width:170px;aspect-ratio:16/9;overflow:hidden;border:1px solid #323952;border-radius:9px;background:#1a2131;color:#cbd5ea;text-decoration:none}
+  body.clipit-mobile #creatorWatch .watch-thumbnail:focus-visible {outline:2px solid #a58aff;outline-offset:3px}
+  body.clipit-mobile #creatorWatch .watch-thumb-image {display:block;width:100%;height:100%;object-fit:cover}
+  body.clipit-mobile #creatorWatch .watch-thumb-fallback {position:absolute;inset:0;display:grid;place-items:center;padding:8px;text-align:center;font-size:11px;line-height:1.35;background:#1a2131}
+  body.clipit-mobile #creatorWatch .watch-thumb-image[hidden],
+  body.clipit-mobile #creatorWatch .watch-thumb-fallback[hidden] {display:none}
+  body.clipit-mobile #creatorWatch .watch-thumb-duration {position:absolute;right:5px;bottom:5px;padding:2px 5px;border-radius:4px;background:rgba(0,0,0,.8);color:#fff;font-size:10px;line-height:1.3;font-weight:700}
+  body.clipit-mobile #creatorWatch .watch-video-details {min-width:0;flex:1}
   body.clipit-mobile #creatorWatch .watch-video-title {font-size:14px;font-weight:750;color:#f1f3ff;line-height:1.4}
   body.clipit-mobile #creatorWatch .watch-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
   body.clipit-mobile #creatorWatch .watch-actions a,
