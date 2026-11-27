@@ -9,7 +9,10 @@
     id: String(item?.snippet?.resourceId?.channelId || '').trim(),
     title: String(item?.snippet?.title || 'Untitled creator').slice(0, 120)
   })).filter(item => /^UC[A-Za-z0-9_-]{22}$/.test(item.id));
-  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions};
+  const thumbnailCandidates = thumbs => [...new Set(['medium','high','default','standard','maxres']
+    .map(size => thumbs?.[size]?.url)
+    .filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))];
+  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions, thumbnailCandidates};
   if (!root.document) return;
 
   function init() {
@@ -183,6 +186,7 @@
           title: String(v.snippet?.title || 'Untitled video').slice(0,200),
           published: v.snippet?.publishedAt || '',
           duration: parseDuration(v.contentDetails?.duration),
+          thumbnailUrls: thumbnailCandidates(v.snippet?.thumbnails),
           live: v.snippet?.liveBroadcastContent
         })).filter(v=>v.duration>=600 && v.live!=='live' && v.live!=='upcoming')
           .sort((a,b)=>Date.parse(b.published)-Date.parse(a.published)).slice(0,24);
@@ -194,8 +198,33 @@
           const hasBaseline = Array.isArray(previous[v.owner]);
           const isNew = hasBaseline && !previous[v.owner].includes(v.id);
           const row = ui('div','watch-video');
+          const main = ui('div','watch-video-main');
+          const thumb = ui('a','watch-thumbnail');
+          thumb.href = channelUrl(v.id);
+          thumb.target = '_blank';
+          thumb.rel = 'noopener noreferrer';
+          thumb.setAttribute('aria-label','View ' + v.title + ' on YouTube');
+          const preview = ui('img','watch-thumb-image');
+          preview.alt = '';
+          preview.loading = 'lazy';
+          preview.decoding = 'async';
+          const fallback = ui('span','watch-thumb-fallback','Preview unavailable');
+          fallback.hidden = v.thumbnailUrls.length > 0;
+          if (v.thumbnailUrls.length) {
+            let index = 0;
+            const loadNext = () => {
+              if (index < v.thumbnailUrls.length) preview.src = v.thumbnailUrls[index++];
+              else { preview.hidden = true; fallback.hidden = false; }
+            };
+            preview.addEventListener('error',loadNext);
+            loadNext();
+          } else preview.hidden = true;
+          thumb.append(preview, fallback, ui('span','watch-thumb-duration',secondsLabel(v.duration)));
+          const details = ui('div','watch-video-details');
           const label = ui('div','watch-video-title',v.title);
           const meta = ui('p','watch-muted',(creator?.title || 'Creator') + ' · ' + secondsLabel(v.duration) + ' · ' + dateLabel(v.published) + (isNew ? ' · NEW' : ' · Recent'));
+          details.append(label,meta);
+          main.append(thumb,details);
           const actions = ui('div','watch-actions');
           const open = ui('a','quiet buttonlike','View on YouTube');
           open.href=channelUrl(v.id);open.target='_blank';open.rel='noopener noreferrer';
@@ -205,7 +234,7 @@
             document.querySelector('.mobile-nav button[data-screen="create"]')?.click();
             byId('source')?.click();
           };
-          actions.append(open,importFile);row.append(label,meta,actions);videosBox.append(row);
+          actions.append(open,importFile);row.append(main,actions);videosBox.append(row);
         });
         uploads.forEach(u => {
           const old = Array.isArray(seen[u.id]) ? seen[u.id] : [];
