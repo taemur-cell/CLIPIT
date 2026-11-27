@@ -21,7 +21,20 @@
     if (count < 1000000000) return (count / 1000000).toFixed(count < 10000000 ? 1 : 0).replace(/\.0$/, '') + 'M views';
     return (count / 1000000000).toFixed(count < 10000000000 ? 1 : 0).replace(/\.0$/, '') + 'B views';
   };
-  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions, thumbnailCandidates, formatViewCount};
+  // Use a browser-gesture-driven Android intent, with a normal YouTube web fallback.
+  const videoLinks = videoId => {
+    const id = String(videoId || '').trim();
+    if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return null;
+    const web = 'https://www.youtube.com/watch?v=' + id;
+    return {
+      web,
+      android: 'intent://www.youtube.com/watch?v=' + id
+        + '#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url='
+        + encodeURIComponent(web) + ';end',
+      ios: 'youtube://www.youtube.com/watch?v=' + id
+    };
+  };
+  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions, thumbnailCandidates, formatViewCount, videoLinks};
   if (!root.document) return;
 
   function init() {
@@ -52,6 +65,36 @@
       if (text !== undefined) node.textContent = String(text);
       return node;
     };
+    // One reusable picker for all Creator Watch video cards.
+    const chooser = ui('dialog', 'watch-choice-dialog');
+    chooser.setAttribute('aria-labelledby', 'watchChoiceTitle');
+    const chooserTitle = ui('h3', '', 'Open YouTube video');
+    chooserTitle.id = 'watchChoiceTitle';
+    const chooserHelp = ui('p', 'watch-muted', 'Where would you like to watch this video?');
+    const chooserActions = ui('div', 'watch-choice-actions');
+    const chooserApp = ui('a', 'primary', 'Open in YouTube App');
+    const chooserWeb = ui('a', 'secondary', 'Open in Browser');
+    const chooserCancel = ui('button', 'quiet', 'Cancel');
+    chooserCancel.type = 'button';
+    chooserCancel.onclick = () => chooser.close();
+    chooserApp.addEventListener('click', () => chooser.close());
+    chooserWeb.addEventListener('click', () => chooser.close());
+    chooserWeb.target = '_blank';
+    chooserWeb.rel = 'noopener noreferrer';
+    chooserActions.append(chooserApp, chooserWeb, chooserCancel);
+    chooser.append(chooserTitle, chooserHelp, chooserActions);
+    byId('creatorWatch').append(chooser);
+    function showViewerChoice(videoId) {
+      const links = videoLinks(videoId);
+      if (!links) { message('Cannot open this YouTube video link.', true); return; }
+      const agent = navigator.userAgent || '';
+      chooserApp.href = /Android/i.test(agent) ? links.android
+        : /iPhone|iPad|iPod/i.test(agent) ? links.ios : links.web;
+      if (/Android|iPhone|iPad|iPod/i.test(agent)) chooserApp.removeAttribute('target');
+      else chooserApp.target = '_blank';
+      chooserWeb.href = links.web;
+      if (!chooser.open) chooser.showModal();
+    }
     const saveKey = id => 'clipit_creator_watch_v1_' + id;
     function readSaved(id) {
       try {
@@ -213,7 +256,12 @@
           thumb.href = channelUrl(v.id);
           thumb.target = '_blank';
           thumb.rel = 'noopener noreferrer';
-          thumb.setAttribute('aria-label','View ' + v.title + ' on YouTube');
+          thumb.setAttribute('aria-label','Choose how to view ' + v.title + ' on YouTube');
+          thumb.addEventListener('click', e => {
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            showViewerChoice(v.id);
+          });
           const preview = ui('img','watch-thumb-image');
           preview.alt = '';
           preview.loading = 'lazy';
@@ -236,8 +284,9 @@
           details.append(label,meta);
           main.append(thumb,details);
           const actions = ui('div','watch-actions');
-          const open = ui('a','quiet buttonlike','View on YouTube');
-          open.href=channelUrl(v.id);open.target='_blank';open.rel='noopener noreferrer';
+          const open = ui('button','quiet buttonlike','View on YouTube');
+          open.type = 'button';
+          open.onclick = () => showViewerChoice(v.id);
           const importFile = ui('button','secondary','Import permitted file');
           importFile.type='button';
           importFile.onclick=()=>{
