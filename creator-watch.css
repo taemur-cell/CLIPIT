@@ -1,0 +1,31 @@
+/* Creator Watch is intentionally a phone-only pilot. */
+#creatorWatch {display:none}
+@media (max-width:820px) {
+  body.clipit-mobile[data-clipit-screen=watch] #creatorWatch {display:block}
+  body.clipit-mobile[data-clipit-screen=watch] .hero,
+  body.clipit-mobile[data-clipit-screen=watch] .layout,
+  body.clipit-mobile[data-clipit-screen=watch] .results,
+  body.clipit-mobile[data-clipit-screen=watch] #contextStudio,
+  body.clipit-mobile[data-clipit-screen=watch] #youtubeStudio,
+  body.clipit-mobile[data-clipit-screen=watch] .mobile-status,
+  body.clipit-mobile[data-clipit-screen=watch] .mobile-workflow,
+  body.clipit-mobile[data-clipit-screen=watch] .mobile-shortcuts {display:none}
+  body.clipit-mobile .mobile-nav {grid-template-columns:repeat(5,minmax(0,1fr))}
+  body.clipit-mobile .mobile-nav button {font-size:9px;gap:4px;padding-left:0;padding-right:0}
+  body.clipit-mobile #creatorWatch .watch-muted {font-size:12px;line-height:1.55;color:#abb6cf;margin:6px 0}
+  body.clipit-mobile #creatorWatch .watch-line {display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #33394f}
+  body.clipit-mobile #creatorWatch .watch-line:last-child {border-bottom:0}
+  body.clipit-mobile #creatorWatch .watch-line-text {font-size:13px;font-weight:650;min-width:0;overflow-wrap:anywhere;flex:1}
+  body.clipit-mobile #creatorWatch .watch-line button {min-width:78px;min-height:40px}
+  body.clipit-mobile #creatorWatch .watch-block {border-top:1px solid #323952;padding-top:17px;margin-top:17px}
+  body.clipit-mobile #creatorWatch .watch-video {padding:14px 0;border-bottom:1px solid #323952}
+  body.clipit-mobile #creatorWatch .watch-video:last-child {border-bottom:0}
+  body.clipit-mobile #creatorWatch .watch-video-title {font-size:14px;font-weight:750;color:#f1f3ff;line-height:1.4}
+  body.clipit-mobile #creatorWatch .watch-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  body.clipit-mobile #creatorWatch .watch-actions a,
+  body.clipit-mobile #creatorWatch .watch-actions button {width:100%;font-size:12px;min-height:44px;text-decoration:none}
+  body.clipit-mobile #creatorWatch #watchStatus {white-space:pre-wrap}
+  body.clipit-mobile #creatorWatch .watch-counter {font-size:11px;color:#b5a4ff;font-weight:700}
+  body.clipit-mobile #creatorWatch .watch-legal {font-size:11px;line-height:1.6;color:#9ca7be}
+  body.clipit-mobile #creatorWatch #watchMore[hidden] {display:none}
+}
