@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f141b">
+  <title>Watch on YouTube in browser — CLIPIT AI</title>
+  <style>
+    :root {color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0f141b;color:#ebf0f4}
+    * {box-sizing:border-box}
+    body {margin:0;min-height:100vh}
+    main {max-width:960px;margin:auto;padding:16px 14px 44px}
+    header {display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 18px}
+    h1 {font-size:clamp(21px,4.5vw,29px);margin:0}
+    p {line-height:1.5;color:#b7c6d0;font-size:14px}
+    a {color:#9ce2d2}
+    .player {position:relative;aspect-ratio:16/9;width:100%;background:#070a10;border:1px solid #455566;border-radius:12px;overflow:hidden}
+    iframe {width:100%;height:100%;border:0;display:block}
+    .actions {display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+    button,.action {font:inherit;border:1px solid #56796f;background:#26383e;color:#eef8f5;border-radius:9px;padding:12px 14px;text-decoration:none;cursor:pointer;font-weight:650}
+    button.primary {background:#92dfc6;color:#102e27}
+    .note {border:1px solid #34424f;border-radius:10px;padding:12px;font-size:13px}
+    .url {overflow-wrap:anywhere;font-size:13px;color:#c6d6de}
+    .error {color:#ffc0c0}
+    [hidden] {display:none!important}
+  </style>
+</head>
+<body>
+  <main>
+    <header><h1>YouTube in your browser</h1><a href="./">← Back to CLIPIT</a></header>
+    <p>This page opens a YouTube player in this browser tab, without deliberately launching the YouTube app.</p>
+    <section id="player" class="player" aria-label="YouTube video player"></section>
+    <p id="error" class="error" role="alert" hidden>Invalid YouTube video link. Return to CLIPIT and choose the video again.</p>
+    <div id="actions" class="actions">
+      <button id="copy" class="primary" type="button">Copy YouTube video link</button>
+      <a id="youtubeSite" class="action" target="_blank" rel="noopener noreferrer">Visit youtube.com (may open app)</a>
+      <a class="action" href="./">Back to CLIPIT</a>
+    </div>
+    <p id="videoUrl" class="url"></p>
+    <p id="copyStatus" role="status" aria-live="polite"></p>
+    <p class="note">Android may redirect direct youtube.com links to the installed YouTube app. The embedded player above avoids that direct app-link handoff. Some videos cannot be played in an embedded player because the uploader disables embedding; in that case, use the website link or the YouTube app.</p>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      var id = new URLSearchParams(location.search).get('v') || '';
+      var valid = /^[A-Za-z0-9_-]{11}$/.test(id);
+      var error = document.getElementById('error');
+      var controls = document.getElementById('actions');
+      if (!valid) {
+        error.hidden = false;
+        controls.hidden = true;
+        return;
+      }
+      var original = 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?playsinline=1';
+      iframe.title = 'YouTube video player';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      document.getElementById('player').appendChild(iframe);
+      document.getElementById('youtubeSite').href = original;
+      document.getElementById('videoUrl').textContent = original;
+      document.getElementById('copy').addEventListener('click', async function () {
+        try {
+          await navigator.clipboard.writeText(original);
+          document.getElementById('copyStatus').textContent = 'Video link copied.';
+        } catch (e) {
+          document.getElementById('copyStatus').textContent = 'Copy this link: ' + original;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
