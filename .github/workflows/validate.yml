@@ -19,7 +19,7 @@ jobs:
           node --check mobile-ui.js
           node - <<'JS'
           require("./creator-watch.js");
-          const {parseDuration,thumbnailCandidates,formatViewCount} = globalThis.ClipitCreatorWatchUtils;
+          const {parseDuration,thumbnailCandidates,formatViewCount,videoLinks} = globalThis.ClipitCreatorWatchUtils;
           if(parseDuration("PT10M")!==600 || parseDuration("PT9M59S")!==599) throw Error("Long video threshold failed");
           const urls=thumbnailCandidates({
             high:{url:"https://i.ytimg.com/high.jpg"},
@@ -30,8 +30,15 @@ jobs:
           if(thumbnailCandidates({}).length!==0) throw Error("Missing thumbnails should be supported");
           if(formatViewCount('0')!=='0 views' || formatViewCount('523')!=='523 views' || formatViewCount('12345')!=='12K views' || formatViewCount('1234567')!=='1.2M views') throw Error("View count display failed");
           if(formatViewCount(undefined)!=='Views unavailable' || formatViewCount('hidden')!=='Views unavailable') throw Error("Unavailable views fallback failed");
+          const links=videoLinks('dQw4w9WgXcQ');
+          if(!links || links.web!=='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+            || !links.android.includes('package=com.google.android.youtube')
+            || !links.android.includes('S.browser_fallback_url='+encodeURIComponent(links.web))
+            || links.ios!=='youtube://www.youtube.com/watch?v=dQw4w9WgXcQ') throw Error("YouTube open-choice links failed");
+          if(videoLinks('invalid<script>')!==null) throw Error("Unsafe video IDs should be rejected");
           const source=require('fs').readFileSync('./creator-watch.js','utf8');
           if(!source.includes("part:'snippet,contentDetails,statistics'") || !source.includes("v.statistics?.viewCount")) throw Error("YouTube statistics request missing");
+          if(!source.includes('showViewerChoice(v.id)') || !source.includes("chooserWeb.target = '_blank'")) throw Error("YouTube destination picker missing");
           console.log("Creator Watch metadata, thumbnail, and view-count checks passed");
           JS
           python - <<'PY'
