@@ -10,7 +10,7 @@
 /* v5 YouTube integration */
 .ytcard{border-color:#51404a;background:#211f27}.yt-red{background:#f03e50;color:#fff;border-color:#f03e50}.yt-red:hover{background:#d62e43}.yt-note{color:#b8c3ce;font-size:12px;line-height:1.6}.yt-statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.yt-stat{padding:12px;background:#131c26;border:1px solid #364353;border-radius:10px;min-width:0}.yt-stat small{display:block;font-size:11px;color:#9babbb}.yt-stat strong{font-size:18px;display:block;overflow-wrap:anywhere}.ytvideolist,.ytcommentlist{display:grid;gap:8px;margin-top:12px}.ytvideo{padding:11px;border:1px solid #384651;border-radius:10px;background:#161f29;display:flex;gap:10px;align-items:center}.ytvideo img{width:82px;height:47px;object-fit:cover;border-radius:6px;flex:0 0 auto}.ytvideo .ytmeta{min-width:0;flex:1}.ytvideo .ytmeta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ytvideo small,.ytcomment small{display:block;color:#acb9c5;font-size:11px}.ytvideo a,.ytcard a{color:#a6e9d7}.ytcomment{padding:12px;background:#141f29;border:1px solid #384651;border-radius:10px;overflow-wrap:anywhere}.ytcomment p{white-space:pre-wrap;margin:7px 0;font-size:13px}.ytchart{display:flex;gap:3px;align-items:end;height:90px;margin:12px 0 2px;background:#15212a;padding:8px;border-radius:8px}.ytchart i{display:block;flex:1;min-height:2px;border-radius:3px 3px 0 0;background:#91dccc}.ytstate{padding:10px 12px;background:#11232b;border:1px solid #35535a;border-radius:9px;font-size:12px;margin:9px 0;white-space:pre-wrap}.ytstate.bad{border-color:#88535a;color:#ffb4b4}.ytfilepill{overflow-wrap:anywhere;background:#111c27;border-radius:9px;padding:11px;font-size:12px}.ytform{margin:10px 0}.ytform label{display:block;color:#bed0d9;font-size:12px;margin-bottom:8px}.ytform textarea{width:100%;min-height:90px;resize:vertical;border-radius:9px;padding:10px;border:1px solid #435261;background:#111923;color:#edf2f4;font:inherit;margin:5px 0}.ytdialog{max-width:560px;max-height:90vh;overflow:auto}.yt-upload-status{font-size:12px;color:#c3dfd3;padding:8px 0;white-space:pre-wrap}.ytsetupdetails summary{cursor:pointer;color:#b7dfd7;font-weight:600}.ytsetupdetails{margin:12px 0}.ytdivider{border-top:1px solid #384451;margin:16px 0}.yt-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.yt-metric{font-size:12px;color:#b7c8cf;margin-top:8px}@media(max-width:620px){.yt-statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ytvideo img{width:66px;height:44px}.ytdialog{max-height:96dvh;padding:14px}}
 
-</style><title>CLIPIT AI — Mobile Creator Studio</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="stylesheet" href="./mobile-ui.css"></head>
+</style><title>CLIPIT AI — Mobile Creator Studio</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="stylesheet" href="./mobile-ui.css"><link rel="stylesheet" href="./creator-watch.css"></head>
 <body>
 <header class="top"><div class="logo"><span class="mark">▶</span><div>AI Clip Studio <small>Phone editor + YouTube Studio • v5.0</small></div></div><button id="helpButton" class="quiet">Guide & help</button></header>
 <main class="wrap">
@@ -48,7 +48,33 @@
  <button id="contextMake" class="primary full" type="button" disabled>Create context-aware clip suggestions</button>
  <p class="foot">Action understanding only applies if the imported analysis includes visual descriptions from the optional image-caption model. Captions may be inaccurate. Always review the selected moments and subtitles before publishing.</p>
  </section>
- <section class="card results"><div class="cardhead"><h2>4. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
+ <section class="card" id="creatorWatch" aria-label="Creator Watch">
+ <div class="cardhead"><h2>Creator Watch</h2><span class="tiny">Pilot · manual refresh</span></div>
+ <p class="helper">Find long videos from the creators you subscribe to. Choose up to three favorites and refresh recent uploads. Only videos at least <b>10 minutes</b> long appear. Your YouTube account must be connected.</p>
+ <div id="watchStatus" class="notice" role="status">Connect YouTube to get started.</div>
+ <button type="button" class="primary full" id="watchConnect">Go to YouTube connection</button>
+ <div class="watch-block">
+  <h3>Your creator library <span class="watch-counter" id="watchCount">0 / 3 saved</span></h3>
+  <div id="watchFavorites"></div>
+ </div>
+ <div class="watch-block">
+  <h3>Discover subscribed creators</h3>
+  <button type="button" class="secondary full" id="watchImportSubscriptions">Import my subscriptions</button>
+  <label class="fieldlabel" for="watchSearch">Find a creator in the loaded subscriptions</label>
+  <input type="search" id="watchSearch" placeholder="Search channel names" autocomplete="off" disabled>
+  <div id="watchSubscriptions"></div>
+  <button type="button" class="quiet full" id="watchMore" hidden>Load more subscriptions</button>
+ </div>
+ <div class="watch-block">
+  <h3>Recent long videos</h3>
+  <p class="watch-muted">Shows uploads of 10:00 or longer, from the most recent 10 uploads per saved creator. Initial results are marked Recent; later uploads can be marked New when you refresh.</p>
+  <button type="button" class="primary full" id="watchRefresh">Check recent uploads</button>
+  <p class="watch-muted" id="watchLastChecked">Not checked yet.</p>
+  <div id="watchVideos"></div>
+ </div>
+ <p class="watch-legal">This pilot reads YouTube metadata only. It does not record, download or analyze creators' YouTube videos. To make clip drafts, manually import footage you own or have permission to edit, then use CLIPIT's existing clip tools. Your creator selections are stored on this phone for the connected channel.</p>
+</section>
+<section class="card results"><div class="cardhead"><h2>4. Review, customize & generate</h2><span id="clipCount" class="tiny">0 clips</span></div><div id="clipList" class="cliplist"><div class="empty">Your proposed clips will appear here after you choose a video.</div></div>
 <div class="two settings"><label>Resolution<select id="quality"><option value="360">Light • 360 × 640 (OPPO)</option><option value="540" selected>Balanced • 540 × 960</option><option value="720">High • 720 × 1280 (Pixel 7)</option></select></label><label>Framing<select id="framing"><option value="fit" selected>Fit whole picture</option><option value="fill">Center crop to 9:16</option></select></label></div>
 <button class="primary full" id="generate" disabled>Generate all clips with edits</button>
 <div id="progress" class="progress" aria-live="polite">Choose a video and make a clip first.</div><div id="downloads" class="downloads"></div>
@@ -121,7 +147,7 @@
 <script>window.CLIP_STUDIO_YOUTUBE_CLIENT_ID = '784143642709-o8q9u09eaeene077n54jj0emo3vln3ts.apps.googleusercontent.com';</script>
 <script src="./context_engine.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="./mobile-ui.js" defer></script>
+<script src="./mobile-ui.js" defer></script><script src="./creator-watch.js" defer></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -642,6 +668,7 @@ function ytRenderConnection(){
  $('ytPublishExternal').disabled=!ytReady()||!yt.external||yt.uploading;
  $('ytConnect').textContent=ytReady()?'Reconnect / switch channel':'Connect YouTube channel';
  $('ytChannelInfo').textContent=yt.channel?`Connected to: ${yt.channel.snippet?.title||yt.channel.id} (${yt.channel.id})`:'Channel: not connected';
+ window.dispatchEvent(new Event('clipit:youtube-state'));
 }
 function ytLoadSettings(){
  try{yt.clientId=localStorage.getItem('clipstudio_yt_client_id')||''}catch(e){}
