@@ -16,6 +16,7 @@
      [layout?.querySelector('.card:first-child .cardhead h2'),'Import your footage'],
      [layout?.querySelector('.card:nth-child(2) .cardhead h2'),'Find your highlights'],
      [select('contextStudio')?.querySelector('.cardhead h2'),'Context AI'],
+     [select('creatorWatch')?.querySelector('.cardhead h2'),'Creator Watch'],
      [document.querySelector('.results .cardhead h2'),'Your clip library'],
      [select('youtubeStudio')?.querySelector('.cardhead h2'),'YouTube Studio']
    ];
@@ -51,10 +52,11 @@
    const screens={
      ai:['CONTEXT ANALYSIS','Find highlights by meaning.','Import timed subtitles or an optional Colab analysis report to rank moments using dialogue and available visual evidence.'],
      clips:['MY WORKSPACE','Review & finish clips.','Adjust timestamps, edit overlays, and save finished videos to your phone.'],
+     watch:['CREATOR LIBRARY','Follow your favorite creators.','Import subscriptions, select three creators, and discover their recent long videos. Source videos must be supplied with permission.'],
      youtube:['PUBLISH & INSIGHTS','Your YouTube channel.','Connect your channel, review videos before upload, and explore available analytics.']
    };
    for(const [key,info] of Object.entries(screens)){
-     const target=key==='ai'?select('contextStudio'):key==='clips'?document.querySelector('.results'):select('youtubeStudio');
+     const target=key==='ai'?select('contextStudio'):key==='clips'?document.querySelector('.results'):key==='watch'?select('creatorWatch'):select('youtubeStudio');
      if (!target) continue;
      const intro=document.createElement('section');intro.className='screen-title';intro.dataset.screenTitle=key;
      const kicker=document.createElement('div');kicker.className='kicker';kicker.textContent=info[0];
@@ -67,9 +69,10 @@
      create:'<path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="5"/>',
      ai:'<path d="M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3z"/><path d="M19 18v4M17 20h4"/>',
      clips:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4z"/>',
+     watch:'<path d="M4 5h16M5 12h14M7 19h10"/><circle cx="18" cy="5" r="2"/>',
      youtube:'<rect x="2.5" y="5" width="19" height="14" rx="5"/><path d="m10 9 5 3-5 3z"/>'
    };
-   const names={create:'Create',ai:'Context AI',clips:'Clips',youtube:'YouTube'};
+   const names={create:'Create',ai:'Context AI',clips:'Clips',watch:'Watch',youtube:'YouTube'};
    const nav=document.createElement('nav');nav.className='mobile-nav';nav.setAttribute('aria-label','CLIPIT sections');
    for(const key of Object.keys(names)){
      const button=document.createElement('button');button.type='button';button.dataset.screen=key;
