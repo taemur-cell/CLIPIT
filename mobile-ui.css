@@ -140,3 +140,22 @@
   html {scroll-behavior:auto;}
   .mobile-nav button {transition:none!important;}
 }
+
+/* Hide mobile-only UI outside mobile size, including device rotation. */
+.mobile-nav,.mobile-status,.mobile-workflow,.mobile-shortcuts,.screen-title {display:none;}
+@media(max-width:820px) {
+  body.clipit-mobile .mobile-status {display:flex;}
+  body.clipit-mobile .mobile-workflow {display:grid;}
+  body.clipit-mobile .mobile-shortcuts {display:flex;}
+  body.clipit-mobile .screen-title:not([hidden]) {display:block;}
+  body.clipit-mobile[data-clipit-screen]:not([data-clipit-screen=create]) .mobile-status,
+  body.clipit-mobile[data-clipit-screen]:not([data-clipit-screen=create]) .mobile-workflow,
+  body.clipit-mobile[data-clipit-screen]:not([data-clipit-screen=create]) .mobile-shortcuts {display:none;}
+  body.clipit-mobile .advanced-controls {margin-top:16px;padding:0 13px;border:1px solid #35405b;border-radius:14px;background:#101828;}
+  body.clipit-mobile .advanced-controls summary {cursor:pointer;padding:15px 3px;color:#d0c2ff;font-weight:730;font-size:13px;list-style-position:inside;}
+  body.clipit-mobile .advanced-controls[open] {padding-bottom:13px;}
+  body.clipit-mobile .advanced-controls h3 {margin:10px 0;}
+  body.clipit-mobile .advanced-controls .buttons button {flex:1 1 45%;}
+  body.clipit-mobile #youtubeStudio .yt-red {min-width:0;}
+  body.clipit-mobile .mobile-nav {display:grid;}
+}
