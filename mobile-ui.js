@@ -21,6 +21,20 @@
    ];
    headings.forEach(([el,title])=>{if(el)el.textContent=title;});
    const source=select('source'), count=select('clipCount');
+   // Keep the manual cutting tools available without showing everything at once.
+   const manualHeading=Array.from(layout?.querySelectorAll('h3')||[]).find(h=>h.textContent.includes('select a precise moment'));
+   if(manualHeading) {
+     const manualFields=manualHeading.nextElementSibling;
+     const manualButtons=manualFields?.nextElementSibling;
+     if(manualFields?.classList.contains('two') && manualButtons?.classList.contains('buttons')) {
+       const details=document.createElement('details');
+       details.className='advanced-controls';
+       const summary=document.createElement('summary');
+       summary.textContent='Manual trim & precise timestamps';
+       manualHeading.parentNode.insertBefore(details,manualHeading);
+       details.append(summary,manualHeading,manualFields,manualButtons);
+     }
+   }
    const status=document.createElement('div');
    status.className='mobile-status';
    status.setAttribute('role','status');
@@ -73,7 +87,7 @@
        b.setAttribute('aria-label',names[b.dataset.screen]+(active?', current section':''));
      }
      document.querySelectorAll('.screen-title').forEach(el=>{el.hidden=el.dataset.screenTitle!==key;});
-     window.scrollTo({top:0,behavior:'instant'});
+     window.scrollTo({top:0,behavior:'auto'});
    }
    nav.addEventListener('click',e=>{const b=e.target.closest('button[data-screen]');if(b)screen(b.dataset.screen);});
    shortcuts.addEventListener('click',e=>{const b=e.target.closest('button[data-screen-link]');if(b)screen(b.dataset.screenLink);});
@@ -94,7 +108,7 @@
    }
    const observer=new MutationObserver(updateClipBadge);
    if(count)observer.observe(count,{subtree:true,childList:true,characterData:true});
-   const ytFile=select('ytExternalFile'); // Existing confirmation dialog stays mandatory.
+   // Existing YouTube OAuth, preview and upload confirmation remain unchanged.
    updateClipBadge();updateSource();screen('create');
    window.addEventListener('pageshow',()=>{updateSource();updateClipBadge();});
  }
