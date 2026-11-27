@@ -70,7 +70,7 @@
     chooser.setAttribute('aria-labelledby', 'watchChoiceTitle');
     const chooserTitle = ui('h3', '', 'Open YouTube video');
     chooserTitle.id = 'watchChoiceTitle';
-    const chooserHelp = ui('p', 'watch-muted', 'Where would you like to watch this video?');
+    const chooserHelp = ui('p', 'watch-muted', 'Choose the YouTube app, or watch in a new browser tab without handing the link to the installed app.');
     const chooserActions = ui('div', 'watch-choice-actions');
     const chooserApp = ui('a', 'primary', 'Open in YouTube App');
     const chooserWeb = ui('a', 'secondary', 'Open in Browser');
@@ -92,7 +92,9 @@
         : /iPhone|iPad|iPod/i.test(agent) ? links.ios : links.web;
       if (/Android|iPhone|iPad|iPod/i.test(agent)) chooserApp.removeAttribute('target');
       else chooserApp.target = '_blank';
-      chooserWeb.href = links.web;
+      // Linking directly to youtube.com can trigger Android App Links and open the app.
+      // A CLIPIT-hosted tab with the official embedded YouTube player is a browser-safe route.
+      chooserWeb.href = './watch.html?v=' + encodeURIComponent(videoId);
       if (!chooser.open) chooser.showModal();
     }
     const saveKey = id => 'clipit_creator_watch_v1_' + id;
@@ -252,16 +254,10 @@
           const isNew = hasBaseline && !previous[v.owner].includes(v.id);
           const row = ui('div','watch-video');
           const main = ui('div','watch-video-main');
-          const thumb = ui('a','watch-thumbnail');
-          thumb.href = channelUrl(v.id);
-          thumb.target = '_blank';
-          thumb.rel = 'noopener noreferrer';
+          const thumb = ui('button','watch-thumbnail');
+          thumb.type = 'button';
           thumb.setAttribute('aria-label','Choose how to view ' + v.title + ' on YouTube');
-          thumb.addEventListener('click', e => {
-            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-            e.preventDefault();
-            showViewerChoice(v.id);
-          });
+          thumb.addEventListener('click', () => showViewerChoice(v.id));
           const preview = ui('img','watch-thumb-image');
           preview.alt = '';
           preview.loading = 'lazy';
