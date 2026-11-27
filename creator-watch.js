@@ -12,7 +12,16 @@
   const thumbnailCandidates = thumbs => [...new Set(['medium','high','default','standard','maxres']
     .map(size => thumbs?.[size]?.url)
     .filter(url => typeof url === 'string' && /^https:\/\//i.test(url)))];
-  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions, thumbnailCandidates};
+  const formatViewCount = value => {
+    if (value === undefined || value === null || value === '') return 'Views unavailable';
+    const count = Number(value);
+    if (!Number.isSafeInteger(count) || count < 0) return 'Views unavailable';
+    if (count < 1000) return count.toLocaleString('en-US') + ' views';
+    if (count < 1000000) return (count / 1000).toFixed(count < 10000 ? 1 : 0).replace(/\.0$/, '') + 'K views';
+    if (count < 1000000000) return (count / 1000000).toFixed(count < 10000000 ? 1 : 0).replace(/\.0$/, '') + 'M views';
+    return (count / 1000000000).toFixed(count < 10000000000 ? 1 : 0).replace(/\.0$/, '') + 'B views';
+  };
+  root.ClipitCreatorWatchUtils = {parseDuration, normalizeSubscriptions, thumbnailCandidates, formatViewCount};
   if (!root.document) return;
 
   function init() {
@@ -177,7 +186,7 @@
         }));
         const ids = [...new Set(uploads.flatMap(x=>x.videos))];
         const vdata = ids.length ? await ytApi(ytURL('https://www.googleapis.com/youtube/v3/videos',{
-          part:'snippet,contentDetails',id:ids.join(',')
+          part:'snippet,contentDetails,statistics',id:ids.join(',')
         })) : {items:[]};
         const ownerByVideo = new Map();
         uploads.forEach(u=>u.videos.forEach(id=>ownerByVideo.set(id,u.id)));
@@ -186,6 +195,7 @@
           title: String(v.snippet?.title || 'Untitled video').slice(0,200),
           published: v.snippet?.publishedAt || '',
           duration: parseDuration(v.contentDetails?.duration),
+          views: formatViewCount(v.statistics?.viewCount),
           thumbnailUrls: thumbnailCandidates(v.snippet?.thumbnails),
           live: v.snippet?.liveBroadcastContent
         })).filter(v=>v.duration>=600 && v.live!=='live' && v.live!=='upcoming')
@@ -222,7 +232,7 @@
           thumb.append(preview, fallback, ui('span','watch-thumb-duration',secondsLabel(v.duration)));
           const details = ui('div','watch-video-details');
           const label = ui('div','watch-video-title',v.title);
-          const meta = ui('p','watch-muted',(creator?.title || 'Creator') + ' · ' + secondsLabel(v.duration) + ' · ' + dateLabel(v.published) + (isNew ? ' · NEW' : ' · Recent'));
+          const meta = ui('p','watch-muted',(creator?.title || 'Creator') + ' · ' + secondsLabel(v.duration) + ' · ' + v.views + ' · ' + dateLabel(v.published) + (isNew ? ' · NEW' : ' · Recent'));
           details.append(label,meta);
           main.append(thumb,details);
           const actions = ui('div','watch-actions');

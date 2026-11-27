@@ -19,7 +19,7 @@ jobs:
           node --check mobile-ui.js
           node - <<'JS'
           require("./creator-watch.js");
-          const {parseDuration,thumbnailCandidates} = globalThis.ClipitCreatorWatchUtils;
+          const {parseDuration,thumbnailCandidates,formatViewCount} = globalThis.ClipitCreatorWatchUtils;
           if(parseDuration("PT10M")!==600 || parseDuration("PT9M59S")!==599) throw Error("Long video threshold failed");
           const urls=thumbnailCandidates({
             high:{url:"https://i.ytimg.com/high.jpg"},
@@ -28,7 +28,11 @@ jobs:
           });
           if(urls.length!==2 || urls[0]!=="https://i.ytimg.com/medium.jpg" || urls[1]!=="https://i.ytimg.com/high.jpg") throw Error("Thumbnail selection failed");
           if(thumbnailCandidates({}).length!==0) throw Error("Missing thumbnails should be supported");
-          console.log("Creator Watch metadata and thumbnail checks passed");
+          if(formatViewCount('0')!=='0 views' || formatViewCount('523')!=='523 views' || formatViewCount('12345')!=='12K views' || formatViewCount('1234567')!=='1.2M views') throw Error("View count display failed");
+          if(formatViewCount(undefined)!=='Views unavailable' || formatViewCount('hidden')!=='Views unavailable') throw Error("Unavailable views fallback failed");
+          const source=require('fs').readFileSync('./creator-watch.js','utf8');
+          if(!source.includes("part:'snippet,contentDetails,statistics'") || !source.includes("v.statistics?.viewCount")) throw Error("YouTube statistics request missing");
+          console.log("Creator Watch metadata, thumbnail, and view-count checks passed");
           JS
           python - <<'PY'
           from pathlib import Path
