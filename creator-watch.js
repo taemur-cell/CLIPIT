@@ -286,7 +286,8 @@
           const importFile = ui('button','secondary','Import permitted file');
           importFile.type='button';
           importFile.onclick=()=>{
-            document.querySelector('.mobile-nav button[data-screen="create"]')?.click();
+            if (typeof window.ClipitNavigate === "function") window.ClipitNavigate("create");
+            else document.querySelector('.mobile-nav button[data-screen="create"]')?.click();
             byId('source')?.click();
           };
           actions.append(open,importFile);row.append(main,actions);videosBox.append(row);
@@ -302,7 +303,7 @@
         message('Refresh failed: '+ e.message + '. Try reconnecting YouTube or refreshing later.',true);
       } finally {busy=false; updateButtons();}
     }
-    btnConnect.onclick = () => document.querySelector('.mobile-nav button[data-screen="youtube"]')?.click();
+    btnConnect.onclick = () => { if (typeof window.ClipitNavigate === "function") window.ClipitNavigate("youtube"); else document.querySelector('.mobile-nav button[data-screen="youtube"]')?.click(); }
     btnImport.onclick = () => loadSubscriptions(false);
     btnMore.onclick = () => loadSubscriptions(true);
     btnRefresh.onclick = refreshVideos;
