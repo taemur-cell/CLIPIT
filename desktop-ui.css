@@ -1,0 +1,67 @@
+/* Desktop layer: keeps the existing mobile layout untouched. */
+@media (min-width:821px) {
+  :root{--bg:#0b1020;--card:#151d30;--line:#2a3652;--accent:#ad9aff;--ink:#edf0ff;--muted:#aab6d0;color-scheme:dark}
+  body.clipit-desktop{background:#0b1020;color:#edf0ff;min-height:100vh}
+  body.clipit-desktop .top{position:sticky;top:0;z-index:30;padding:12px 28px;background:#0d1426f5;border-bottom:1px solid #27334d}
+  body.clipit-desktop .logo{font-size:19px;letter-spacing:-.04em}
+  body.clipit-desktop .logo small{font-size:10px;font-weight:500;letter-spacing:.09em}
+  body.clipit-desktop .logo .mark{background:linear-gradient(140deg,#ad9aff,#666de1);color:white}
+  body.clipit-desktop .desktop-brand-ai{color:#b6a5ff}
+  body.clipit-desktop .desktop-shell{display:grid;grid-template-columns:235px minmax(0,1fr);min-height:calc(100vh - 70px)}
+  body.clipit-desktop .desktop-sidebar{position:sticky;top:70px;align-self:start;height:calc(100vh - 70px);background:#101729;border-right:1px solid #28334b;padding:28px 14px;display:flex;flex-direction:column;gap:20px}
+  body.clipit-desktop .desktop-sidebar-heading,body.clipit-desktop .desktop-page-kicker{font-size:10px;letter-spacing:.16em;font-weight:800;color:#b6a5ff}
+  body.clipit-desktop .desktop-sidebar-heading{padding-left:14px}
+  body.clipit-desktop .desktop-nav{display:grid;gap:6px}
+  body.clipit-desktop .desktop-nav button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;min-height:47px;padding:11px 13px;background:transparent;color:#b9c5df;border:1px solid transparent;border-radius:12px;font-size:13px;font-weight:690}
+  body.clipit-desktop .desktop-nav button:hover{background:#1e2840;color:#fff}
+  body.clipit-desktop .desktop-nav button[aria-current=page]{background:#29243f;color:#e5d9ff;border-color:#534778}
+  body.clipit-desktop .desktop-nav-symbol{font-size:19px;min-width:20px;text-align:center}
+  body.clipit-desktop .desktop-side-note{font-size:11px;line-height:1.7;color:#8697b4;margin-top:auto}
+  body.clipit-desktop .desktop-shortcuts a{font-size:11px;width:100%;border-color:#3b4963}
+  body.clipit-desktop main.wrap{max-width:1600px;width:100%;padding:30px clamp(20px,3vw,52px) 65px;min-width:0}
+  body.clipit-desktop .desktop-page-heading{margin-bottom:25px}
+  body.clipit-desktop .desktop-page-heading h1{font-size:clamp(29px,3vw,38px);margin:6px 0 7px;letter-spacing:-.05em}
+  body.clipit-desktop .desktop-page-heading p{font-size:14px;color:#aab6d0}
+  body.clipit-desktop .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+  body.clipit-desktop .card{background:#151d30;border-color:#2a3652;border-radius:17px;padding:22px;min-width:0}
+  body.clipit-desktop .primary{background:#ac9aff;color:#1b1238;border-color:#ac9aff}
+  body.clipit-desktop .secondary{background:#293b55;border-color:#40536b}
+  body.clipit-desktop .quiet,body.clipit-desktop .buttonlike{background:#222f46;border-color:#3c4a65;color:#dfebff}
+  body.clipit-desktop input,body.clipit-desktop select{background:#101a2c;border-color:#3b4b68}
+  body.clipit-desktop button:focus-visible,body.clipit-desktop a:focus-visible{outline:2px solid #cabaff;outline-offset:3px}
+  body.clipit-desktop .preview{max-height:54vh}
+  body.clipit-desktop .desktop-legacy-cloud,body.clipit-desktop footer{display:none}
+  body.clipit-desktop #creatorWatch{display:block}
+  body.clipit-desktop #creatorWatch .watch-block{margin-top:22px;padding-top:18px;border-top:1px solid #303e58}
+  body.clipit-desktop #creatorWatch .watch-muted,body.clipit-desktop #creatorWatch .watch-legal{font-size:12px;color:#a8b7d3;line-height:1.6}
+  body.clipit-desktop #creatorWatch .watch-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #2f3b56}
+  body.clipit-desktop #creatorWatch .watch-line-text{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+  body.clipit-desktop #creatorWatch .watch-video{border-bottom:1px solid #2d3b58;padding:16px 0}
+  body.clipit-desktop #creatorWatch #watchVideos{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 18px}
+  body.clipit-desktop #creatorWatch .watch-video-main{display:flex;gap:13px;align-items:start}
+  body.clipit-desktop #creatorWatch .watch-thumbnail{position:relative;flex:0 0 43%;padding:0;aspect-ratio:16/9;border:1px solid #3a4560;background:#0b1426;border-radius:10px;overflow:hidden;cursor:pointer}
+  body.clipit-desktop #creatorWatch .watch-thumb-image{display:block;width:100%;height:100%;object-fit:cover}
+  body.clipit-desktop #creatorWatch .watch-thumb-fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:#bac9dd}
+  body.clipit-desktop #creatorWatch .watch-thumb-image[hidden],body.clipit-desktop #creatorWatch .watch-thumb-fallback[hidden]{display:none}
+  body.clipit-desktop #creatorWatch .watch-thumb-duration{position:absolute;right:5px;bottom:5px;background:#000c;color:white;font-size:10px;padding:3px 5px;border-radius:4px}
+  body.clipit-desktop #creatorWatch .watch-video-details{flex:1;min-width:0}
+  body.clipit-desktop #creatorWatch .watch-video-title{font-size:13px;line-height:1.4;font-weight:750}
+  body.clipit-desktop #creatorWatch .watch-actions{display:flex;gap:8px;margin-top:11px}
+  body.clipit-desktop #creatorWatch .watch-actions button{flex:1;font-size:12px;min-height:39px}
+  body.clipit-desktop #creatorWatch #watchStatus{white-space:pre-wrap}
+  body.clipit-desktop #creatorWatch #watchCount{color:#c1adff}
+  body.clipit-desktop #creatorWatch .watch-choice-dialog{padding:22px;width:min(420px,90vw)}
+  body.clipit-desktop #creatorWatch .watch-choice-dialog h3{margin-bottom:11px;font-size:19px}
+  body.clipit-desktop #creatorWatch .watch-choice-actions{display:grid;gap:10px;margin-top:17px}
+  body.clipit-desktop #creatorWatch .watch-choice-actions>*{display:flex;align-items:center;justify-content:center;min-height:46px;text-decoration:none}
+  body.clipit-desktop .screen-title{display:none}
+  body.clipit-desktop[data-clipit-screen=create] #contextStudio,body.clipit-desktop[data-clipit-screen=create] .results,body.clipit-desktop[data-clipit-screen=create] #creatorWatch,body.clipit-desktop[data-clipit-screen=create] #youtubeStudio{display:none}
+  body.clipit-desktop[data-clipit-screen=ai] .layout,body.clipit-desktop[data-clipit-screen=ai] .results,body.clipit-desktop[data-clipit-screen=ai] #creatorWatch,body.clipit-desktop[data-clipit-screen=ai] #youtubeStudio{display:none}
+  body.clipit-desktop[data-clipit-screen=clips] .layout,body.clipit-desktop[data-clipit-screen=clips] #contextStudio,body.clipit-desktop[data-clipit-screen=clips] #creatorWatch,body.clipit-desktop[data-clipit-screen=clips] #youtubeStudio{display:none}
+  body.clipit-desktop[data-clipit-screen=watch] .layout,body.clipit-desktop[data-clipit-screen=watch] #contextStudio,body.clipit-desktop[data-clipit-screen=watch] .results,body.clipit-desktop[data-clipit-screen=watch] #youtubeStudio{display:none}
+  body.clipit-desktop[data-clipit-screen=youtube] .layout,body.clipit-desktop[data-clipit-screen=youtube] #contextStudio,body.clipit-desktop[data-clipit-screen=youtube] .results,body.clipit-desktop[data-clipit-screen=youtube] #creatorWatch{display:none}
+}
+@media (min-width:821px) and (max-width:1100px){
+ body.clipit-desktop .desktop-shell{grid-template-columns:195px minmax(0,1fr)}
+ body.clipit-desktop .layout{grid-template-columns:1fr}
+}
